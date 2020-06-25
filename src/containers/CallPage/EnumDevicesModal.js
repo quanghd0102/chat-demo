@@ -11,11 +11,11 @@ const EnumDevicesModal = ({ visible, toggle }) => {
     const [audioInput, setAudioInput] = useState(null)
     const [audioOutput, setAudioOutput] = useState(null)
     const [videoInput, setVideoInput] = useState(null)
-    const defaultAudioInput = useSelector(selectors.selectAudioInput);
-    const defaultAudioOutput = useSelector(selectors.selectAudioOutput);
-    const defaultVideoInput = useSelector(selectors.selectVideoInput);
-    const localStream = useSelector(selectors.selectLocalStream)
-    const remoteStream = useSelector(selectors.selectRemoteStream)
+    // const defaultAudioInput = useSelector(selectors.selectAudioInput);
+    // const defaultAudioOutput = useSelector(selectors.selectAudioOutput);
+    // const defaultVideoInput = useSelector(selectors.selectVideoInput);
+    // const localStream = useSelector(selectors.selectLocalStream)
+    // const remoteStream = useSelector(selectors.selectRemoteStream)
     const [devices, setDevices] = useState({})
 
     const onSelect = (value, name) => {
@@ -65,7 +65,7 @@ const EnumDevicesModal = ({ visible, toggle }) => {
         dispatch(actions.doSetAudioVideoSource(devices));
         toggle()
         if(devices.audioOutput){
-           attachSinkId(remoteStream, devices.audioOutput);
+        //    attachSinkId(remoteStream, devices.audioOutput);
         }
     }
     
@@ -93,9 +93,9 @@ const EnumDevicesModal = ({ visible, toggle }) => {
                                     onSelect(value, "audioInput")
                                 }
                                 name="audioInput"
-                                defaultValue={
-                                    defaultAudioInput || audioInput[0].deviceId
-                                }
+                                // defaultValue={
+                                //     // defaultAudioInput || audioInput[0].deviceId
+                                // }
                                 style={{ width: "70%" }}
                             >
                                 {audioInput.map((item, key) => (
@@ -119,10 +119,10 @@ const EnumDevicesModal = ({ visible, toggle }) => {
                                 onChange={(value) =>
                                     onSelect(value, "audioOutput")
                                 }
-                                defaultValue={
-                                    defaultAudioOutput ||
-                                    audioOutput[0].deviceId
-                                }
+                                // defaultValue={
+                                //     // defaultAudioOutput ||
+                                //     // audioOutput[0].deviceId
+                                // }
                                 style={{ width: "70%" }}
                             >
                                 {audioOutput.map((item, key) => (
@@ -149,9 +149,9 @@ const EnumDevicesModal = ({ visible, toggle }) => {
                         <div style={{ width: "30%" }}>Video source</div>
                         <Select
                             onChange={(value) => onSelect(value, "videoInput")}
-                            defaultValue={
-                                defaultVideoInput || videoInput[0].deviceId
-                            }
+                            // defaultValue={
+                            //     // defaultVideoInput || videoInput[0].deviceId
+                            // }
                             style={{ width: "70%" }}
                         >
                             {videoInput.map((item, key) => (

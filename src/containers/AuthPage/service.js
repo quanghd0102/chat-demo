@@ -1,4 +1,5 @@
 import asapi from "../../api/asapi";
+import {auth, addNewUser} from "../../services/firebase"
 
 export const fetchSignin = async ({ email, password }) => {
     const response = await asapi.post("/auth/login", {
@@ -9,13 +10,32 @@ export const fetchSignin = async ({ email, password }) => {
 };
 
 export const fetchSignup = async ({ firstname, lastname, email, password }) => {
-    const response = await asapi.post("/auth/register", {
-        firstname,
-        lastname,
-        email,
-        password,
-    });
-    return response;
+  await auth
+  .createUserWithEmailAndPassword(email, password)
+  .then((res) => {
+    // addNewUser({
+    //   id: res.user.uid,
+    //   firstname: firstname,
+    //   lastname: lastname,
+    //   email: email,
+    //   password: password,
+    // });
+    console.log("res", res);
+    
+    return res;
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+//   const response = await asapi.post("/auth/register", {
+//     firstname,
+//     lastname,
+//     email,
+//     password,
+// });
+// return response;
+    
 };
 
 export const fetchSendResetPassword = async (email) => {

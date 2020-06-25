@@ -14,6 +14,8 @@ const initialState = {
 
 const authReducer = (state = initialState, {type, payload})=>
     produce(state, draft=> {
+        console.log("heekki");
+        
     switch (type) {
         case constants.SIGNIN_INIT_LOADING_DONE:
             draft.initLoading = false;

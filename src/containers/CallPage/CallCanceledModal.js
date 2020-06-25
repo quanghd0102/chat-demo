@@ -9,12 +9,12 @@ import AvatarCus from "../../components/AvatarCus";
 const CallCanceledModal = () => {
     const dispatch = useDispatch();
 
-    const callStatus = useSelector(selectors.selectStatus);
-    const listener = useSelector(selectors.selectListener);
+    // const callStatus = useSelector(selectors.selectStatus);
+    // const listener = useSelector(selectors.selectListener);
 
     return (
         <Modal
-            visible={callStatus === "rejected"}
+            // visible={callStatus === "rejected"}
             footer={null}
             closable={false}
         >
@@ -32,9 +32,9 @@ const CallCanceledModal = () => {
                         textAlign: "center",
                     }}
                 >
-                    <AvatarCus record={listener} size={100} />
+                    {/* <AvatarCus record={listener} size={100} /> */}
                     <p style={{ marginTop: "15px" }}>
-                        <strong>{listener.firstname}</strong> is busy
+                        {/* <strong>{listener.firstname}</strong> is busy */}
                     </p>
                     <div>
                         <Button

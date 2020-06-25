@@ -1,18 +1,22 @@
 import { Icon, Layout, Menu, Dropdown, Avatar, Button, Badge } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import HeaderWrapper from "./styles/HeaderWrapper";
 // import selectors from "./selectors";
-import actions from "./actions";
+// import actions from "./actions";
+import {doSignout} from "../../features/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
     // const ssauth = JSON.parse(window.localStorage.getItem("ssauth"));
     const dispatch = useDispatch();
-    let doSignout = () => {
-        // actions.doSignout();
+
+
+    let Signout = () => {
+        doSignout();
     };
 
+    
     let doNavigateToProfile = () => {
         // getHistory().push('/profile');
     };
@@ -28,7 +32,7 @@ const Header = () => {
                 Thông tin cá nhân
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item onClick={doSignout} key="logout">
+            <Menu.Item onClick={Signout} key="logout">
                 <Icon type="logout" />
                 Thoát
             </Menu.Item>
@@ -68,9 +72,7 @@ const Header = () => {
                                 alt="avatar"
                             />
                             <span className="user-dropdown-text">
-                                {ssauth &&
-                                    ssauth.user &&
-                                    ssauth.user.username.toUpperCase()}
+                                {userLogin.email}
                             </span>
                         </span>
                     </Dropdown>

@@ -22,6 +22,8 @@ import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
 import layoutSelectors from "../Layout/selectors";
 import { getSetting, setSetting } from "../shared/settings";
+import {doSignout} from "../../features/authSlice";
+import {firebase} from "../../services/firebase"
 
 const { Sider, Header } = Layout;
 const { Search } = Input;
@@ -38,13 +40,26 @@ function ChatSidebar() {
     const leftSidebarVisible = useSelector(
         layoutSelectors.selectLeftSidebarVisible
     );
+    const currentUserLogin = useSelector((state)=>state.auth.userLogin);
     const requests = useSelector(contactSelectors.selectRequests);
-    const [playSound, setPlaySound] = useState(getSetting().sound)
+    const [playSound, setPlaySound] = useState(getSetting().sound);
+    const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
     // const messageFooter = (
     //     <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
     //         <Search placeholder="Search contact" />
     //     </div>
     // );
+
+    // const signout = () =>{
+    //     dispatch(doSignout());
+    // }
+    
+    const signout = async () => {
+        console.log("logout user", currentUserLogin);
+        localStorage.removeItem("userLogin");
+        await firebase.auth().signOut();
+        dispatch(doSignout());
+      };
 
     const messagesSidebar = () => {
         if (currentTab === "contact") {
@@ -118,16 +133,16 @@ function ChatSidebar() {
 
     const menu = (
         <Menu style={{ width: "150px" }}>
-            {currentUser && (
+            {userLoginLocalStorage && (
                 <Menu.Item key="0">
-                    <Link to={`/user/${currentUser.id}/update`}>
+                    <Link to={`/user/${userLoginLocalStorage.id}/update`}>
                         Update info
                     </Link>
                 </Menu.Item>
             )}
-            {currentUser && (
+            {userLoginLocalStorage && (
                 <Menu.Item key="1">
-                    <Link to={`/user/${currentUser.id}/update-password`}>
+                    <Link to={`/user/${userLoginLocalStorage.id}/update-password`}>
                         Change password
                     </Link>
                 </Menu.Item>
@@ -138,7 +153,7 @@ function ChatSidebar() {
             <Menu.Divider />
             <Menu.Item
                 key="3"
-                onClick={() => dispatch(authActions.doSignout())}
+                onClick={signout}
             >
                 <span>Sign out</span>
             </Menu.Item>
@@ -160,7 +175,7 @@ function ChatSidebar() {
             }}
         >
             <Row type="flex" align="middle">
-                <AvatarCus record={currentUser ? currentUser : null} />
+                <AvatarCus record={currentUserLogin ? currentUser : null} />
                 <span className="ml-3" style={{ lineHeight: "1" }}>
                     <span style={{ display: "block" }}>
                         {currentUser
@@ -203,13 +218,13 @@ function ChatSidebar() {
 
     return (
         <Sider
-            width={
-                isMobileDevice && leftSidebarVisible
-                    ? "100vw"
-                    : isMobileDevice && !leftSidebarVisible
-                    ? "0"
-                    : "300"
-            }
+            // width={
+            //     isMobileDevice && leftSidebarVisible
+            //         ? "100vw"
+            //         : isMobileDevice && !leftSidebarVisible
+            //         ? "0"
+            //         : "300"
+            // }
         >
             <ModalCreateGroupchat
                 visible={modalCreateGroupChatVisible}

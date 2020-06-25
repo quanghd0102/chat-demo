@@ -13,37 +13,38 @@ const StreamModal = () => {
     let localVideoRef = useRef();
     let remoteVideoRef = useRef();
     const dispatch = useDispatch();
-    const currentUser = useSelector(userSelectors.selectCurrentUser);
     const [settingModal, setSettingModal] = useState(false)
-    const callStatus = useSelector(selectors.selectStatus);
-    const caller = useSelector(selectors.selectCaller);
-    const listener = useSelector(selectors.selectListener);
-    const localStream = useSelector(selectors.selectLocalStream);
-    const remoteStream = useSelector(selectors.selectRemoteStream);
-    const peer = useSelector(selectors.selectPeer);
 
-    useEffect(() => {
-        if (
-            localVideoRef.current ||
-            (localVideoRef.current &&
-                localVideoRef.current.srcObject !== localStream)
-        ) {
-            localVideoRef.current.srcObject = localStream;
-        }
-    }, [localStream]);
-    useEffect(() => {
-        if (
-            remoteVideoRef.current ||
-            (remoteVideoRef.current &&
-                remoteVideoRef.current.srcObject !== remoteStream)
-        ) {
-            remoteVideoRef.current.srcObject = remoteStream;
-        }
-    }, [remoteStream]);
+    // const currentUser = useSelector(userSelectors.selectCurrentUser);
+    // const callStatus = useSelector(selectors.selectStatus);
+    // const caller = useSelector(selectors.selectCaller);
+    // const listener = useSelector(selectors.selectListener);
+    // const localStream = useSelector(selectors.selectLocalStream);
+    // const remoteStream = useSelector(selectors.selectRemoteStream);
+    // const peer = useSelector(selectors.selectPeer);
+
+    // useEffect(() => {
+    //     if (
+    //         localVideoRef.current ||
+    //         (localVideoRef.current &&
+    //             // localVideoRef.current.srcObject !== localStream)
+    //     ) {
+    //         // localVideoRef.current.srcObject = localStream;
+    //     }
+    // }, [localStream]);
+    // useEffect(() => {
+    //     if (
+    //         remoteVideoRef.current ||
+    //         (remoteVideoRef.current &&
+    //             remoteVideoRef.current.srcObject !== remoteStream)
+    //     ) {
+    //         remoteVideoRef.current.srcObject = remoteStream;
+    //     }
+    // }, [remoteStream]);
 
     const handleCallEnded = () => {
         const remoteId =
-            listener.id === currentUser.id ? caller.id : listener.id;
+            // listener.id === currentUser.id ? caller.id : listener.id;
         emitCallEnded({ id: remoteId });
         dispatch(actions.doCallEnded());
     };
@@ -64,7 +65,7 @@ const StreamModal = () => {
                 toggle={() => setSettingModal(!settingModal)}
             />
             <Modal
-                visible={callStatus === "streaming"}
+                // visible={callStatus === "streaming"}
                 footer={null}
                 closable={false}
                 width={"100%"}

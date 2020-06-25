@@ -9,18 +9,18 @@ import AvatarCus from "../../components/AvatarCus";
 const ContactingModal = () => {
     const dispatch = useDispatch();
 
-    const callStatus = useSelector(selectors.selectStatus);
-    const caller = useSelector(selectors.selectCaller);
-    const listener = useSelector(selectors.selectListener);
+    // const callStatus = useSelector(selectors.selectStatus);
+    // const caller = useSelector(selectors.selectCaller);
+    // const listener = useSelector(selectors.selectListener);
 
     const onCancelRequestCall = () => {
-        emitCallerCancelRequestCall({ caller, listener });
+        // emitCallerCancelRequestCall({ caller, listener });
         dispatch(actions.doClear());
     };
 
     return (
         <Modal
-            visible={callStatus === "contacting"}
+            // visible={callStatus === "contacting"}
             footer={null}
             closable={false}
         >
@@ -38,9 +38,9 @@ const ContactingModal = () => {
                         textAlign: "center",
                     }}
                 >
-                    <AvatarCus record={listener} size={100} />
+                    {/* <AvatarCus record={listener} size={100} /> */}
                     <p style={{ marginTop: "15px" }}>
-                        Contacting <strong>{listener.firstname}</strong> ...
+                        {/* Contacting <strong>{listener.firstname}</strong> ... */}
                     </p>
                     <div>
                         <Button

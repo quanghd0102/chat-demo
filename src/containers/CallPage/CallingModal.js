@@ -9,24 +9,24 @@ import AvatarCus from '../../components/AvatarCus';
 const CallingModal = () => {
     const dispatch = useDispatch();
 
-    const callStatus = useSelector(selectors.selectStatus);
-    const caller = useSelector(selectors.selectCaller);
-    const listener = useSelector(selectors.selectListener);
-    const peerId = useSelector(selectors.selectPeerId);
+    // const callStatus = useSelector(selectors.selectStatus);
+    // const caller = useSelector(selectors.selectCaller);
+    // const listener = useSelector(selectors.selectListener);
+    // const peerId = useSelector(selectors.selectPeerId);
 
     const onAnswerCall = () => {
-        emitAnswerCall({ caller, listener, peerId });
+        // emitAnswerCall({ caller, listener, peerId });
         // dispatch(actions.doClear());
     };
 
     const onRejectCall = () => {
-        emitRejectCall({ caller, listener });
+        // emitRejectCall({ caller, listener });
         dispatch(actions.doClear());
     };
 
     return (
         <Modal
-            visible={callStatus === "calling"}
+            // visible={callStatus === "calling"}
             footer={null}
             closable={false}
         >
@@ -44,9 +44,9 @@ const CallingModal = () => {
                         textAlign: "center",
                     }}
                 >
-                    <AvatarCus record={caller} size={100} />
+                    {/* <AvatarCus record={caller} size={100} /> */}
                     <p style={{ marginTop: "15px" }}>
-                        <strong>{caller.firstname}</strong> is calling ...
+                        {/* <strong>{caller.firstname}</strong> is calling ... */}
                     </p>
                     <div>
                         <Button
