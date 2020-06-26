@@ -5,7 +5,8 @@ import { getHistory } from "../containers/configureStore";
 
 const ref = database.ref("users/");
 const userRef = db.collection("users");
-export const getAllUserFromDatabase = createAsyncThunk("users/", async () => {
+
+export const getAllUserFromDatabase = createAsyncThunk("usersTable/", async () => {
   try {
     const userArr = [];
     await ref.once("value").then((snap) => {
@@ -35,51 +36,6 @@ export const getAllUserFromFirestore = createAsyncThunk("users", async () => {
   }
 });
 
-export const doSignup = (userInfo, dispatch) => {
-  try {
-    console.log("action", userInfo);
-    let response = auth
-      .createUserWithEmailAndPassword(userInfo.email, userInfo.password)
-      .then((res) => {
-        // addNewUser({
-        //   id: res.user.uid,
-        //   firstname: firstname,
-        //   lastname: lastname,
-        //   email: email,
-        //   password: password,
-        // });
-        console.log("res", res);
-
-        return res;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    console.log("response register", response);
-    // dispatch(actions.register(userInfo));
-    getHistory().push("/signin");
-  } catch (error) {
-    console.log("errror register", error);
-  }
-};
-
-export const doSignin = async (userInfo) => {
-  try {
-    console.log("vào login nè");
-    await auth
-      .signInWithEmailAndPassword(userInfo.email, userInfo.password)
-      .then((res) => {
-        console.log("ok");
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
-
-    getHistory().push("/");
-  } catch (error) {
-    console.log("lỗi login nè", error);
-  }
-};
 
 export const loadData = () => {
   return (dispatch, getState) => {
@@ -106,27 +62,17 @@ export const loadData = () => {
 const userSlice = createSlice({
   name: "users",
   initialState: {
-    initLoading: false,
-    dataLoading: false,
-    findLoading: false,
-    saveLoading: false,
-    destroyLoading: false,
-    exportLoading: false,
-    error: null,
-    redirectTo: "/contact",
-    record: null,
-    users: [],
-    current: null,
-    error: null,
-    userLoginEmailPassword: {
-      email: "",
-      password: "",
-    },
-    userLogin: {
-      name: "",
-      email: "",
-      img: "",
-    },
+    initLoading: true,
+  dataLoading: false,
+  findLoading: false,
+  saveLoading: false,
+  destroyLoading: false,
+  exportLoading: false,
+  error: null,
+  redirectTo: "/contact",
+  record: null,
+  users: [],
+  current: null,
     userRealtime: [],
     userFirestore: [],
   },
@@ -166,7 +112,7 @@ const userSlice = createSlice({
     },
     [getAllUserFromDatabase.fulfilled]: (state, action) => {
       if (state.isLoading === true) {
-        state.userRealtime = action.payload;
+        state.users = action.payload;
       }
     },
     [getAllUserFromDatabase.rejected]: (state, action) => {

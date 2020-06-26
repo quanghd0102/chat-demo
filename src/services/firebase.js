@@ -20,14 +20,28 @@ export const database = firebase.database();
 export const storage = firebase.storage();
 export const db = firebase.firestore();
 
-export const addNewUserToCloud = ({ id, email, name, role }) => {
-  db.collection("users")
-    .add({ id: id, email: email, name: name, role: role })
-    .then(function () {
-      console.log("Document successfully written!");
+export const addNewUserToCloud = ({
+  id,
+  firstname,
+  lastname,
+  email,
+  password,
+}) => {
+  console.log("vào adđ user to cloud");
+
+  db.collection("Users")
+    .add({
+      id: id,
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      password: password,
     })
-    .catch(function (error) {
-      console.error("Error writing document: ", error);
+    .then(() => {
+      console.log("User added!");
+    })
+    .catch((error) => {
+      console.log("not added yet ", error);
     });
 };
 

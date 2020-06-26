@@ -16,7 +16,7 @@ function ModalAddMemberToGroup({ visible, doToggle }) {
     const dispatch = useDispatch();
     const record = useSelector(selectors.selectRecord);
     const users = useSelector(contactSelectors.selectContacts);
-    const currentUser = useSelector(userSelectors.selectCurrentUser);
+    const currentUser = JSON.parse(localStorage.getItem('userLogin'));
     const [newMembers, setNewMembers] = useState([]);
 
     const isMemberAdded = (userId) => {

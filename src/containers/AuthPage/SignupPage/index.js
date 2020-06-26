@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 // import actions from "../actions";
 import selectors from "../selectors";
-import { auth } from "../../../services/firebase";
+import { auth, addNewUserToCloud } from "../../../services/firebase";
 import { addNewUser } from "../../../services/firebase";
 
 import {doSignup} from "../../../features/authSlice";
@@ -84,6 +84,7 @@ const Signup = ({ form }) => {
               if (!err) {
                 console.log("values", values);
                 doSubmit(values);
+                // addNewUserToCloud({id: '1111', firstname: 'hahaa', lastname: 'ahadfsaf', email: 'hihi@gmail.com', password: '111111'})
               }
             });
           }}

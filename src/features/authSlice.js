@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getHistory } from "../store";
-import { auth, addNewUser } from "../services/firebase";
-import { firebase } from "../services/firebase";
+import { auth, addNewUserToCloud, addNewUser } from "../services/firebase";
+import { db, database } from "../services/firebase";
 import action from "containers/AuthPage/actions";
 import { act } from "react-dom/test-utils";
 import { formatRelativeWithOptions } from "date-fns/esm/fp";
@@ -12,9 +12,11 @@ export const doSignin = createAsyncThunk("userLogin", async (userInfo) => {
     await auth
       .signInWithEmailAndPassword(userInfo.email, userInfo.password)
       .then((res) => {
-        console.log("res register", res);
-        const userLoginLocalStorage = JSON.stringify(userInfo);
-        localStorage.setItem('userLogin', userLoginLocalStorage);
+        console.log("res register", res.user.uid);
+        setUserState(res.user.uid);
+        // console.log("userLogin dosignin", userLogin);
+        // const userLoginLocalStorage = JSON.stringify(userLogin);
+        // localStorage.setItem("userLogin", userLoginLocalStorage);
         getHistory().push("/");
       });
     return userInfo;
@@ -22,6 +24,28 @@ export const doSignin = createAsyncThunk("userLogin", async (userInfo) => {
     console.log("lỗi login nè", error);
   }
 });
+// ref.orderByChild("email").equalTo(email).once("value").then(....)
+export const setUserState = async (id) => {
+  let user = {};
+  const ref = database.ref("usersTable/");
+  await ref.orderByChild("id").equalTo(id).once("value")
+    .then((snapshot) => {
+      if (!snapshot.empty) {
+        let listuser = snapshot.val();
+        console.log("check user login", listuser[id]);
+        user = {
+          id: listuser[id].id,
+          firstname: listuser[id].firstname,
+          lastname: listuser[id].lastname,
+          email: listuser[id].email,
+          password: listuser[id].password,
+        };
+        console.log("hiazzzzzzzzzz", user);
+        const userLoginLocalStorage = JSON.stringify(user);
+        localStorage.setItem("userLogin", userLoginLocalStorage);
+      }
+    });
+};
 
 export const doSignup = createAsyncThunk("userRegister", async (userInfo) => {
   try {
@@ -56,8 +80,11 @@ export const doSignout = () => {
   return (dispatch) => {
     getHistory().push("/signin");
     console.log("vafo logout");
-    const user = JSON.parse(localStorage.getItem('userLogin'));
-    console.log("userLoginLocalStorage", JSON.parse(localStorage.getItem('userLogin')));
+    const user = JSON.parse(localStorage.getItem("userLogin"));
+    console.log(
+      "userLoginLocalStorage",
+      JSON.parse(localStorage.getItem("userLogin"))
+    );
 
     return dispatch(actions.logout(user));
   };
@@ -76,6 +103,9 @@ const authSlice = createSlice({
     signinError: null,
     sigupError: null,
     userLogin: {
+      id: null,
+      firstname: "",
+      lastname: "",
       email: "",
       password: "",
     },
@@ -88,7 +118,7 @@ const authSlice = createSlice({
     logout: (state, action) => {
       state.initLoading = false;
       state.signinLoading = false;
-      state.userLogin = action.payload
+      state.userLogin = action.payload;
     },
   },
   extraReducers: {

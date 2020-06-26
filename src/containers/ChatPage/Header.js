@@ -10,6 +10,8 @@ const { Header: AntHeader } = Layout;
 const Header = () => {
     // const ssauth = JSON.parse(window.localStorage.getItem("ssauth"));
     const dispatch = useDispatch();
+    const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
+
 
 
     let Signout = () => {
@@ -72,7 +74,7 @@ const Header = () => {
                                 alt="avatar"
                             />
                             <span className="user-dropdown-text">
-                                {userLogin.email}
+                                {userLoginLocalStorage.email}
                             </span>
                         </span>
                     </Dropdown>

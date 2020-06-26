@@ -14,6 +14,8 @@ function ModalCreateGroupchat({ visible, doToggle }) {
     const [newMembers, setNewMembers] = useState([]);
     const [groupName, setGroupName] = useState("Group name");
     const dispatch = useDispatch();
+    const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
+
 
     const idNewMemberAdded = (userId) => {
         // Đây có phải là new member hay không?
@@ -68,7 +70,7 @@ function ModalCreateGroupchat({ visible, doToggle }) {
     useEffect(() => {
         dispatch(contactActions.listContacts());
     }, []);
-    if (!currentUser) return <span></span>;
+    if (!userLoginLocalStorage) return <span></span>;
     return (
         <div>
             <Modal

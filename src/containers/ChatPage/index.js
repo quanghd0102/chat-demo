@@ -58,7 +58,7 @@ export default function ChatPage() {
           <Sidebar />
           {/* {record ? ( */}
             {/* <> */}
-              <ChatContent />
+              {/* <ChatContent /> */}
               {/* {rightSidebarVisible && <RightSideBar />} */}
             {/* </> */}
           {/* ) : !isMobileDevice ? ( */}
