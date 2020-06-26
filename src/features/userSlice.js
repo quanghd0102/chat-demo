@@ -3,10 +3,10 @@ import { database, db } from "../services/firebase";
 import { auth, addNewUser } from "../services/firebase";
 import { getHistory } from "../containers/configureStore";
 
-const ref = database.ref("users/");
+const ref = database.ref("usersTable/");
 const userRef = db.collection("users");
 
-export const getAllUserFromDatabase = createAsyncThunk("usersTable/", async () => {
+export const getAllUserFromDatabase = createAsyncThunk("users/", async () => {
   try {
     const userArr = [];
     await ref.once("value").then((snap) => {
@@ -106,20 +106,19 @@ const userSlice = createSlice({
   extraReducers: {
     //get all user
     [getAllUserFromDatabase.pending]: (state, action) => {
-      if (state.isLoading === false) {
+      state.findLoading = true;
         state.isLoading = true;
-      }
+      
     },
     [getAllUserFromDatabase.fulfilled]: (state, action) => {
-      if (state.isLoading === true) {
-        state.users = action.payload;
-      }
+      // console.log("action.payload users", action.payload);
+      state.findLoading = false;
+      state.users = action.payload;
+      
     },
     [getAllUserFromDatabase.rejected]: (state, action) => {
-      if (state.isLoading === true) {
-        state.isLoading = false;
+        state.findLoading = false;
         state.error = action.payload;
-      }
     },
     [getAllUserFromFirestore.pending]: (state, action) => {
       if (state.isLoading === false) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { List, Button, Tooltip } from "antd";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,18 +12,49 @@ const UserList = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectors.selectUsers);
   const findLoading = useSelector(selectors.selectFindLoading);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  // const users = useSelector((state)=>state.user.users);
 
-  const handleSearch = (term) => {
-    if (term.trim() === "") return;
-    dispatch(actions.list({ term }));
+  useEffect(() => {
+    // console.log("user of selectors", users);
+  });
+
+  // const handleSearch = (event) => {
+  //   // if (term.trim() === "") return;
+    
+  //   console.log("user of handle search", users);
+  //   setSearchValue(term);
+  //   console.log("setSearchValue", searchValue);
+  // };
+
+  const searchUsers = () => {
+    if (users.length > 0) {
+      console.log("users", users);
+      console.log("searchValue", searchValue);
+      let resultSearch = users.filter((item) => {
+        if (searchValue) {
+          return (
+            item.lastname.toLowerCase().search(searchValue.toLowerCase()) !== -1 
+          );
+        }
+        return "";
+      });
+      console.log("resultSearch", resultSearch);
+      setSearchResult(resultSearch);
+      console.log("searchResult", searchResult);
+      
+    }
   };
 
   const searchbar = (
     <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
       <Search
         placeholder="Search contact"
-        onSearch={handleSearch}
+        name="valueSearchUser"
+        onChange={(event)=>setSearchValue(event.target.value)}
         loading={findLoading}
+        onKeyPress={searchUsers}
       />
     </div>
   );
@@ -46,17 +77,21 @@ const UserList = () => {
     dispatch(contactActions.doUpdate(userInfo));
   };
   const renderFriendsList = () => {
+    let listUsers = [];
+    if(searchResult.length > 0){
+      listUsers = searchResult;
+    }
+    else listUsers = users;
     return (
       <List
         className="scroll-y flex-1 bg-transparent"
         itemLayout="horizontal"
-        dataSource={users}
+        dataSource={listUsers}
         renderItem={(item, index) => (
           <List.Item className={`"border-0" border-0 px-4 py-3`}>
             <List.Item.Meta
               avatar={
                 // <Badge dot status="success"> </Badge>
-
                 <AvatarCus record={item} />
               }
               title={
@@ -71,17 +106,17 @@ const UserList = () => {
               }
               description={
                 <>
-                  {!!item.type && item.type === "notContact" && (
-                    <Tooltip title="Add Contact">
-                      <Button
-                        type="primary"
-                        size="small"
-                        onClick={() => handleAddContactClick(item)}
-                      >
-                        Add Contact
-                      </Button>
-                    </Tooltip>
-                  )}
+                  {/* {!!item.type && item.type === "notContact" && ( */}
+                  <Tooltip title="Add Contact">
+                    <Button
+                      type="primary"
+                      size="small"
+                      onClick={() => handleAddContactClick(item)}
+                    >
+                      Add Contact
+                    </Button>
+                  </Tooltip>
+                  {/* )} */}
                   {!!item.type && item.type === "request" && (
                     <>
                       <Tooltip title="Confirm request">

@@ -10,6 +10,7 @@ import layoutActions from "../Layout/actions";
 import callActions from "../CallPage/actions";
 import SigninPage from "containers/AuthPage/SigninPage";
 import Signin from "../AuthPage/SigninPage";
+import {getAllUserFromDatabase} from "../../features/userSlice"
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));
@@ -26,12 +27,14 @@ export default function ChatPage() {
   const record = useSelector(selectors.selectRecord);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
 
+
   const windowOnResize = () => {
     dispatch(layoutActions.doWindowResize(window.innerWidth));
   };
 
   useEffect(() => {
     console.log("userLogin", userLogin);
+    dispatch(getAllUserFromDatabase())
     console.log("userLoginLocalStorage", userLoginLocalStorage);
     dispatch(actions.list());
     dispatch(contactActions.listRequests());

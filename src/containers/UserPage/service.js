@@ -5,8 +5,12 @@ const services = {
     listFn: async ({ term }) => {
         let url = "/user";
         url = term ? url + `?term=${term}` : url;
+        console.log("url check", url);
+        
         const response = await asapi.get(url);
-        return response;
+        console.log("url api", response);
+        
+        return url;
     },
 
     findFn: async (id) => {
