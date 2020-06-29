@@ -10,7 +10,8 @@ import layoutActions from "../Layout/actions";
 import callActions from "../CallPage/actions";
 import SigninPage from "containers/AuthPage/SigninPage";
 import Signin from "../AuthPage/SigninPage";
-import {getAllUserFromDatabase} from "../../features/userSlice"
+import {getAllUserFromDatabase} from "../../features/userSlice";
+import {manageAddFr} from "../../features/contactSlice";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));
@@ -33,9 +34,8 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    console.log("userLogin", userLogin);
-    dispatch(getAllUserFromDatabase())
-    console.log("userLoginLocalStorage", userLoginLocalStorage);
+    dispatch(getAllUserFromDatabase());
+    dispatch(manageAddFr());
     dispatch(actions.list());
     dispatch(contactActions.listRequests());
     windowOnResize(window.innerWidth);

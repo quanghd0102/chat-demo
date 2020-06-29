@@ -63,3 +63,15 @@ export const addNewUser = ({ id, firstname, lastname, email, password }) => {
     password: password,
   });
 };
+// db.collection("cities").add({
+export const manageRequestAddContact = (senderID, senderFirstname, senderLastname, receiverID) => {
+  console.log("vafo ddaay quarn ly");
+  
+  db.collection("manageRequestAddContact" ).add({
+    senderID: senderID,
+    senderFirstname: senderFirstname,
+    senderLastname: senderLastname,
+    receiverID: receiverID,
+    isAccept : false
+  });
+}

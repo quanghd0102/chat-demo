@@ -36,7 +36,6 @@ export const getAllUserFromFirestore = createAsyncThunk("users", async () => {
   }
 });
 
-
 export const loadData = () => {
   return (dispatch, getState) => {
     ref.on("child_added", (snapshot) => {
@@ -59,20 +58,27 @@ export const loadData = () => {
   };
 };
 
+export const doAddContact = (userInfo) => {
+  console.log("user Info reducer", userInfo);
+  return (dispatch) => {
+    dispatch(actions.doCreateContact({ ...userInfo, type: "request" }));
+  };
+};
+
 const userSlice = createSlice({
   name: "users",
   initialState: {
     initLoading: true,
-  dataLoading: false,
-  findLoading: false,
-  saveLoading: false,
-  destroyLoading: false,
-  exportLoading: false,
-  error: null,
-  redirectTo: "/contact",
-  record: null,
-  users: [],
-  current: null,
+    dataLoading: false,
+    findLoading: false,
+    saveLoading: false,
+    destroyLoading: false,
+    exportLoading: false,
+    error: null,
+    redirectTo: "/contact",
+    record: null,
+    users: [],
+    current: null,
     userRealtime: [],
     userFirestore: [],
   },
@@ -101,24 +107,30 @@ const userSlice = createSlice({
     signIn: (state, action) => {
       state.userLoginEmailPassword = action.payload;
     },
+    doCreateContact: (state, action) => {
+      console.log("check current user", action.payload);
+      const index = state.users.findIndex((i) => i.id === action.payload.id);
+      if (index !== -1) {
+        state.users[index] = action.payload;
+      }
+      
+    },
   },
 
   extraReducers: {
     //get all user
     [getAllUserFromDatabase.pending]: (state, action) => {
       state.findLoading = true;
-        state.isLoading = true;
-      
+      state.isLoading = true;
     },
     [getAllUserFromDatabase.fulfilled]: (state, action) => {
       // console.log("action.payload users", action.payload);
       state.findLoading = false;
       state.users = action.payload;
-      
     },
     [getAllUserFromDatabase.rejected]: (state, action) => {
-        state.findLoading = false;
-        state.error = action.payload;
+      state.findLoading = false;
+      state.error = action.payload;
     },
     [getAllUserFromFirestore.pending]: (state, action) => {
       if (state.isLoading === false) {

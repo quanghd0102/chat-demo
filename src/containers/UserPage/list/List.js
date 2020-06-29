@@ -2,49 +2,33 @@ import React, { useState, useEffect } from "react";
 import { List, Button, Tooltip } from "antd";
 import Search from "antd/lib/input/Search";
 import { useDispatch, useSelector } from "react-redux";
-import actions from "../actions";
 import selectors from "../selectors";
 import contactActions from "../../ContactPage/actions";
 import AvatarCus from "../../../components/AvatarCus";
-import { getAllUserFromDatabase } from "../../../features/userSlice";
+import {actions} from "../../../features/userSlice";
+import {manageRequestAddContact} from "../../../services/firebase";
+import {manageAddFr} from "../../../features/contactSlice";
 
 const UserList = () => {
   const dispatch = useDispatch();
+  const [hasRequest, setHasRequest] = useState(false);
   const users = useSelector(selectors.selectUsers);
   const findLoading = useSelector(selectors.selectFindLoading);
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  // const users = useSelector((state)=>state.user.users);
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
 
-  useEffect(() => {
-    // console.log("user of selectors", users);
-  });
+  useEffect(() => {});
 
-  // const handleSearch = (event) => {
-  //   // if (term.trim() === "") return;
-    
-  //   console.log("user of handle search", users);
-  //   setSearchValue(term);
-  //   console.log("setSearchValue", searchValue);
-  // };
-
-  const searchUsers = () => {
-    if (users.length > 0) {
-      console.log("users", users);
-      console.log("searchValue", searchValue);
-      let resultSearch = users.filter((item) => {
-        if (searchValue) {
-          return (
-            item.lastname.toLowerCase().search(searchValue.toLowerCase()) !== -1 
-          );
-        }
-        return "";
-      });
-      console.log("resultSearch", resultSearch);
-      setSearchResult(resultSearch);
-      console.log("searchResult", searchResult);
-      
-    }
+  const handleChange = (event) => {
+    setSearchValue(event.target.value);
+    console.log("mảng users", users);
+    console.log("check search user handle", searchValue);
+    let resultSearchUsers = users.filter((user) =>
+      user.firstname.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setSearchResult(resultSearchUsers);
+    console.log("resultSearchUsers", resultSearchUsers);
   };
 
   const searchbar = (
@@ -52,15 +36,23 @@ const UserList = () => {
       <Search
         placeholder="Search contact"
         name="valueSearchUser"
-        onChange={(event)=>setSearchValue(event.target.value)}
+        onChange={handleChange}
         loading={findLoading}
-        onKeyPress={searchUsers}
       />
     </div>
   );
 
   const handleAddContactClick = (userInfo) => {
-    dispatch(contactActions.doCreate(userInfo));
+    console.log("user info add contact", userInfo);
+    setHasRequest(false);
+    const userData ={ ...userInfo, type: "requestSent" }
+    console.log("check has request", hasRequest);
+    console.log("userLoginLocalStorage.id", userLoginLocalStorage.id);
+    console.log("userInfo.id", userInfo.id);
+    
+    manageRequestAddContact(userLoginLocalStorage.id, userLoginLocalStorage.firstname, userLoginLocalStorage.lastname, userInfo.id);
+    dispatch(actions.doCreateContact(userData))
+    // dispatch(doAddContact(userInfo));
   };
 
   const handleRemoveContactClick = (userInfo) => {
@@ -78,10 +70,9 @@ const UserList = () => {
   };
   const renderFriendsList = () => {
     let listUsers = [];
-    if(searchResult.length > 0){
+    if (searchResult.length > 0) {
       listUsers = searchResult;
-    }
-    else listUsers = users;
+    } else listUsers = users;
     return (
       <List
         className="scroll-y flex-1 bg-transparent"
@@ -106,7 +97,7 @@ const UserList = () => {
               }
               description={
                 <>
-                  {/* {!!item.type && item.type === "notContact" && ( */}
+                  {!!item.type && item.type === "notContact" && (
                   <Tooltip title="Add Contact">
                     <Button
                       type="primary"
@@ -116,7 +107,7 @@ const UserList = () => {
                       Add Contact
                     </Button>
                   </Tooltip>
-                  {/* )} */}
+                   )}
                   {!!item.type && item.type === "request" && (
                     <>
                       <Tooltip title="Confirm request">

@@ -25,10 +25,12 @@ const ContactList = () => {
     // );
 
     useEffect(() => {
+        console.log("check list request", requests);
+        
         dispatch(actions.listContacts());
-        dispatch(actions.listRequestsSent());
+        // dispatch(actions.listRequestsSent());
 
-        return () => {};
+        // return () => {};
     }, []);
 
     return (

@@ -14,9 +14,6 @@ export const doSignin = createAsyncThunk("userLogin", async (userInfo) => {
       .then((res) => {
         console.log("res register", res.user.uid);
         setUserState(res.user.uid);
-        // console.log("userLogin dosignin", userLogin);
-        // const userLoginLocalStorage = JSON.stringify(userLogin);
-        // localStorage.setItem("userLogin", userLoginLocalStorage);
         getHistory().push("/");
       });
     return userInfo;
