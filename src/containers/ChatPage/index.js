@@ -1,7 +1,7 @@
 import React, { useEffect, lazy } from "react";
 import { Layout, Row, Result } from "antd";
 import layoutSelectors from "../Layout/selectors";
-import actions from "./actions";
+// import actions from "./actions";
 import contactActions from "../ContactPage/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -11,7 +11,9 @@ import callActions from "../CallPage/actions";
 import SigninPage from "containers/AuthPage/SigninPage";
 import Signin from "../AuthPage/SigninPage";
 import {getAllUserFromDatabase} from "../../features/userSlice";
+import {getGeneralMessage} from "../../features/messageSlice";
 import {manageAddFr} from "../../features/contactSlice";
+import {actions} from "../../features/messageSlice";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));
@@ -35,8 +37,11 @@ export default function ChatPage() {
 
   useEffect(() => {
     dispatch(getAllUserFromDatabase());
+    console.log("id user Params", userId);
+    
     dispatch(manageAddFr());
-    dispatch(actions.list());
+    dispatch(getGeneralMessage());
+    // dispatch(actions.list());
     dispatch(contactActions.listRequests());
     windowOnResize(window.innerWidth);
     window.addEventListener("resize", windowOnResize);
@@ -59,12 +64,12 @@ export default function ChatPage() {
       <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
         <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
           <Sidebar />
-          {/* {record ? ( */}
-            {/* <> */}
-              {/* <ChatContent /> */}
+          {record ? (
+            <> 
+              <ChatContent />
               {/* {rightSidebarVisible && <RightSideBar />} */}
-            {/* </> */}
-          {/* ) : !isMobileDevice ? ( */}
+            </>
+          ) : ( 
             <Row
               type="flex"
               align="middle"
@@ -81,7 +86,7 @@ export default function ChatPage() {
                 subTitle="On Being Awesome"
               />
             </Row>
-          {/* ) : null} */}
+           ) }
         </Layout>
       </Layout>
     );

@@ -6,7 +6,7 @@ import selectorsUser from "../containers/UserPage/selectors";
 export const doAddContact = (userInfo) => {
   console.log("user Info reducer", userInfo);
   return (dispatch) => {
-    dispatch(actions.doCreateContact({ ...userInfo, type: "requestSent" }));
+    dispatch(actionsr.doCreateContact({ ...userInfo, type: "requestSent" }));
   };
 };
 
@@ -17,8 +17,8 @@ export const manageAddFr = createAsyncThunk("requests", async () => {
     const listRequest = [];
     const snapshot = await ref.get();
     snapshot.forEach((doc) => {
-      console.log("doc.data().id", doc.data());
-      console.log("userLoginLocalStorage.id", userLoginLocalStorage.id);
+      // console.log("doc.data().id", doc.data());
+      // console.log("userLoginLocalStorage.id", userLoginLocalStorage.id);
       if (doc.data().receiverID === userLoginLocalStorage.id) {
         listRequest.push(doc.data());
       }
@@ -53,21 +53,23 @@ const contactSlice = createSlice({
   reducers: {
     doCreateContact: (state, action) => {
       state.saveLoading = false;
-      console.log("action.payload create user", action.payload);
-      //   draft.error = null;
-      //   state.users.forEach((item, index) => {
-      //     if (item.id === payload.id) {
-      //       draft.users[index] = payload;
-      //     }
-      //   });
     },
+    doDeleteFriend: (state, action) => {
+      ref.on("child_removed", (snapshot) => {
+        var arrAfterRemove = state.requests.filter(
+          (item) => item.id !== action.payload.id
+        );
+        state.requests = arrAfterRemove;
+      });
+      
+    }
   },
   extraReducers: {
     [manageAddFr.pending]: (state, action) => {
       state.requestLoading = true;
     },
     [manageAddFr.fulfilled]: (state, action) => {
-      console.log("manage Fr", action.payload);
+      // console.log("manage Fr", action.payload);
       state.requestLoading = false;
       state.requests = action.payload;
     },
@@ -77,5 +79,5 @@ const contactSlice = createSlice({
   },
 });
 
-export const { actions, reducer } = contactSlice;
+export const { actionsr, reducer } = contactSlice;
 export default reducer;

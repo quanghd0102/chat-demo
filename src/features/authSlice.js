@@ -82,7 +82,6 @@ export const doSignout = () => {
       "userLoginLocalStorage",
       JSON.parse(localStorage.getItem("userLogin"))
     );
-
     return dispatch(actions.logout(user));
   };
 };

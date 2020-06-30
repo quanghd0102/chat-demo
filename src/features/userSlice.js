@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { database, db } from "../services/firebase";
-import { auth, addNewUser } from "../services/firebase";
-import { getHistory } from "../containers/configureStore";
+
 
 const ref = database.ref("usersTable/");
 const userRef = db.collection("users");
@@ -113,7 +112,18 @@ const userSlice = createSlice({
       if (index !== -1) {
         state.users[index] = action.payload;
       }
+    },
+    doDestroyRequest: (state, action) => {
+      // const a = manageAddFr();
+      // const userRemove = store.getState().contact.requests;
+
+      // console.log("vào xóa0", userRemove);
       
+      console.log("user remove request", action.payload);
+      const index = state.users.findIndex((i) => i.id === action.payload.id);
+      if (index !== -1) {
+        state.users[index] = action.payload;
+      }
     },
   },
 

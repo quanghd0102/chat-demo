@@ -1,10 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { database, db } from "../services/firebase";
+
+const ref = database.ref("general/");
+export const getGeneralMessage = createAsyncThunk("general/", async () => {
+  try {
+    const message = [];
+    await ref.once("value").then((snap) => {
+      snap.forEach((data) => {
+        let mess = data.val();
+        message.push(mess);
+      });
+    });
+    console.log("message log", message);
+    return message;
+  } catch (ex) {
+    console.log(ex);
+  }
+});
 
 const messageSlice = createSlice({
   name: "message",
   initialState: {
     initLoading: true,
-    messageListLoading: false,
+    messageListLoading: true,
     hasMoreMessageList: true,
     sending: false,
     scrollToBottom: false,
@@ -23,13 +41,21 @@ const messageSlice = createSlice({
     typing: {},
     imageList: [],
     fileList: [],
+    generalMessage: [],
   },
   reducers: {
-    // setInitLoading: (state, action) => {
-    //   state.init = action.payload;
-    // },
+    doFind: (state, action) => {
+      console.log("vàoooooooooooo", state.record.messages);
+      // state.record.messages = action.payload.messages.concat(
+      //   state.record.messages
+      // );
+    },
   },
-  extraReducers: {},
+  extraReducers: {
+    [getGeneralMessage.fullfilled]: (state, action) => {
+      state.generalMessage = action.payload;
+    },
+  },
 });
 
 export const { actions, reducer } = messageSlice;

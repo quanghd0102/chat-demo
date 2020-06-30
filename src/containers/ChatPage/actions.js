@@ -20,7 +20,6 @@ const actions = {
             let gskip = data && data.gskip ?  data.gskip : 0
             let pskip = data && data.pskip ? data.pskip : 0;
             let response = await services.getListFn({ gskip, pskip });
-
             dispatch({
                 type: constants.CHAT_GET_SUCCESS,
                 payload: {

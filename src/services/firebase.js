@@ -61,13 +61,14 @@ export const addNewUser = ({ id, firstname, lastname, email, password }) => {
     lastname: lastname,
     email: email,
     password: password,
+    type:"notContact"
   });
 };
 // db.collection("cities").add({
 export const manageRequestAddContact = (senderID, senderFirstname, senderLastname, receiverID) => {
   console.log("vafo ddaay quarn ly");
-  
   db.collection("manageRequestAddContact" ).add({
+    id: receiverID,
     senderID: senderID,
     senderFirstname: senderFirstname,
     senderLastname: senderLastname,

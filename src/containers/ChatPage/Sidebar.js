@@ -105,7 +105,7 @@ function ChatSidebar() {
         }}
       >
         <Badge dot={requests && requests.length > 0}>
-          <Users size={20} strokeWidth={1} />
+          <SearchIcon size={20} strokeWidth={1} />
         </Badge>
       </Menu.Item>
       <Menu.Item
@@ -115,7 +115,8 @@ function ChatSidebar() {
           textAlign: "center",
         }}
       >
-        <SearchIcon size={20} strokeWidth={1} />
+        
+        <Users size={20} strokeWidth={1} />
       </Menu.Item>
       {/* <Menu.Item
                 key="notification"

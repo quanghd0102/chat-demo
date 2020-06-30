@@ -6,6 +6,7 @@ import selectors from "../selectors";
 import contactActions from "../../ContactPage/actions";
 import AvatarCus from "../../../components/AvatarCus";
 import {actions} from "../../../features/userSlice";
+import {actionsr} from "../../../features/contactSlice";
 import {manageRequestAddContact} from "../../../services/firebase";
 import {manageAddFr} from "../../../features/contactSlice";
 
@@ -45,24 +46,28 @@ const UserList = () => {
   const handleAddContactClick = (userInfo) => {
     console.log("user info add contact", userInfo);
     setHasRequest(false);
-    const userData ={ ...userInfo, type: "requestSent" }
+    const userRequest ={ ...userInfo, type: "requestSent" }
     console.log("check has request", hasRequest);
     console.log("userLoginLocalStorage.id", userLoginLocalStorage.id);
     console.log("userInfo.id", userInfo.id);
-    
     manageRequestAddContact(userLoginLocalStorage.id, userLoginLocalStorage.firstname, userLoginLocalStorage.lastname, userInfo.id);
-    dispatch(actions.doCreateContact(userData))
+    dispatch(actions.doCreateContact(userRequest))
     // dispatch(doAddContact(userInfo));
   };
 
   const handleRemoveContactClick = (userInfo) => {
-    if (userInfo.type === "request") {
-      dispatch(contactActions.doDestroyRequest(userInfo));
-    } else if (userInfo.type === "requestSent") {
-      dispatch(contactActions.doDestroyRequestSent(userInfo));
-    } else if (userInfo.type === "contact") {
-      dispatch(contactActions.doDestroyContact(userInfo));
-    }
+      console.log("usser Infor destroy", userInfo);
+      const userRemoveRequest = {...userInfo, type: "notContact"};
+      dispatch(actions.doDestroyRequest(userRemoveRequest));
+      console.log(" userRemoveRequest id", userRemoveRequest.id);
+      
+      dispatch(actionsr.doDeleteFriend(userRemoveRequest.id));
+    
+    // else if (userInfo.type === "requestSent") {
+    //   dispatch(contactActions.doDestroyRequestSent(userInfo));
+    // } else if (userInfo.type === "contact") {
+    //   dispatch(contactActions.doDestroyContact(userInfo));
+    // }
   };
 
   const handleConfirmContactClick = (userInfo) => {
@@ -82,7 +87,6 @@ const UserList = () => {
           <List.Item className={`"border-0" border-0 px-4 py-3`}>
             <List.Item.Meta
               avatar={
-                // <Badge dot status="success"> </Badge>
                 <AvatarCus record={item} />
               }
               title={
@@ -97,7 +101,7 @@ const UserList = () => {
               }
               description={
                 <>
-                  {!!item.type && item.type === "notContact" && (
+                  {/* {!!item.type && item.type === "notContact" && ( */}
                   <Tooltip title="Add Contact">
                     <Button
                       type="primary"
@@ -107,7 +111,7 @@ const UserList = () => {
                       Add Contact
                     </Button>
                   </Tooltip>
-                   )}
+                   {/* )} */}
                   {!!item.type && item.type === "request" && (
                     <>
                       <Tooltip title="Confirm request">

@@ -63,7 +63,6 @@ function ChatContentHeader() {
         )}
 
         <AvatarCus record={record ? record.receiver : null} />
-
         <span className="ml-3" style={{ lineHeight: "1" }}>
           <span style={{ display: "block" }}>
             {record
