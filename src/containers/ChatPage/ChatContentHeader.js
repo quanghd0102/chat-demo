@@ -3,8 +3,8 @@ import { Video, Info, ArrowLeft } from "react-feather";
 import actions from "./actions";
 import selectors from "./selectors";
 import callSelectors from "../CallPage/selectors";
-import userSelectors from "../UserPage/selectors";
 import { Button, Row, Layout } from "antd";
+import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
 import { useSelector, useDispatch } from "react-redux";
 import { emitCheckListenerStatus } from "../CallPage/socket";
@@ -17,6 +17,7 @@ const { Header } = Layout;
 function ChatContentHeader() {
   const dispatch = useDispatch();
   const record = useSelector(selectors.selectRecord);
+  const receiver = useSelector(selectors.selectReceiver);
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const peerId = useSelector(callSelectors.selectPeerId);
   const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
@@ -62,15 +63,16 @@ function ChatContentHeader() {
           </Link>
         )}
 
-        <AvatarCus record={record ? record.receiver : null} />
+        <AvatarCus record={record ? receiver : null} />
         <span className="ml-3" style={{ lineHeight: "1" }}>
           <span style={{ display: "block" }}>
             {record
-              ? record.conversationType === "ChatGroup"
+              ? 
+              record.conversationType === "ChatGroup"
                 ? isMobileDevice
                   ? textAbstract(record.receiver.name, 25)
                   : record.receiver.name
-                : `${record.receiver.firstname} ${record.receiver.lastname}`
+                : `${receiver.firstname} ${receiver.lastname}`
               : ""}
           </span>
           {/* <small className="text-muted">

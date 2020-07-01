@@ -7,6 +7,11 @@ const selectFindLoading = createSelector(
     (message) => message.findLoading
 );
 
+const selectReceiver = createSelector(
+    [selectRaw],
+    (message) => message.receiver
+);
+
 const selectCurrentSound = createSelector(
     [selectRaw],
     (message) => message.currentSound
@@ -82,6 +87,7 @@ const selectors = {
     selectFindLoading,
     selectMessageListLoading,
     selectRecord,
+    selectReceiver,
     selectMessages,
     selectInputMessage,
     selectRightSidebarVisible,

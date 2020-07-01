@@ -46,7 +46,6 @@ const MessageList = () => {
           renderItem={(item, index) => {
             // if (!currentUser) return <span></span>;
             let user = item;
-            
             // if (item.conversationType === "ChatGroup") {
             //   user = item.receiver;
             // } else {
@@ -83,7 +82,6 @@ const MessageList = () => {
                             flex: 1,
                             whiteSpace: "nowrap",
                             overflow: "hidden",
-
                             textOverflow: "ellipsis",
                           }}
                         >

@@ -76,3 +76,7 @@ export const manageRequestAddContact = (senderID, senderFirstname, senderLastnam
     isAccept : false
   });
 }
+
+export const addNewNodeChat = (id1, id2) =>{
+database.ref(`${id1}-${id2}`);
+}

@@ -8,12 +8,14 @@ import { useParams } from "react-router-dom";
 import selectors from "./selectors";
 import layoutActions from "../Layout/actions";
 import callActions from "../CallPage/actions";
-import SigninPage from "containers/AuthPage/SigninPage";
-import Signin from "../AuthPage/SigninPage";
-import {getAllUserFromDatabase} from "../../features/userSlice";
-import {getGeneralMessage} from "../../features/messageSlice";
-import {manageAddFr} from "../../features/contactSlice";
-import {actions} from "../../features/messageSlice";
+// import SigninPage from "containers/AuthPage/SigninPage";
+// import Signin from "../AuthPage/SigninPage";
+import userSelectors from "../UserPage/selectors";
+import { getAllUserFromDatabase } from "../../features/userSlice";
+import { getGeneralMessage, getPrivateMessage, loadMessage } from "../../features/messageSlice";
+import { manageAddFr } from "../../features/contactSlice";
+import { actions } from "../../features/messageSlice";
+import {addNewNodeChat} from "../../services/firebase";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));
@@ -28,8 +30,8 @@ export default function ChatPage() {
   const userLogin = useSelector((state) => state.auth.userLogin);
   const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
   const record = useSelector(selectors.selectRecord);
-  const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
-
+  const users = useSelector(userSelectors.selectUsers);
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
 
   const windowOnResize = () => {
     dispatch(layoutActions.doWindowResize(window.innerWidth));
@@ -37,8 +39,6 @@ export default function ChatPage() {
 
   useEffect(() => {
     dispatch(getAllUserFromDatabase());
-    console.log("id user Params", userId);
-    
     dispatch(manageAddFr());
     dispatch(getGeneralMessage());
     // dispatch(actions.list());
@@ -50,8 +50,23 @@ export default function ChatPage() {
       window.removeEventListener("resize", windowOnResize);
     };
   }, []);
-  useEffect(() => {    
-    if (userId) {
+  useEffect(() => {
+    if (userId || userId === undefined) {
+      console.log("check nge", users);
+      let userChat = {};
+      users.map((item) => {
+        if (item.id === userId) {
+          userChat = item;
+        }
+      });
+      const data = {
+        senderId: userLoginLocalStorage.id,
+        receiverId: userId, 
+      }
+      dispatch(loadMessage(data));
+      dispatch(getPrivateMessage(data));
+      addNewNodeChat(userLoginLocalStorage.id, userChat.id)
+      dispatch(actions.doSetReciver(userChat));
       dispatch(actions.doFind(userId));
     }
   }, [userId]);
@@ -60,36 +75,34 @@ export default function ChatPage() {
     // dispatch(layoutActions.doHideLeftSidebar());
   }
 
-    return (
-      <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
-        <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
-          <Sidebar />
-          {record ? (
-            <> 
-              <ChatContent />
-              {/* {rightSidebarVisible && <RightSideBar />} */}
-            </>
-          ) : ( 
-            <Row
-              type="flex"
-              align="middle"
-              justify="center"
-              className="px-3 bg-white mh-page"
-              style={{
-                minHeight: "100vh",
-                width: "100%",
-              }}
-            >
-              <Result
-                icon={<img width="300" src="/logo-chat.png" />}
-                title="Welcome to Awesome Chat"
-                subTitle="On Being Awesome"
-              />
-            </Row>
-           ) }
-        </Layout>
+  return (
+    <Layout style={{ height: "100vh", backgroundColor: "#fff" }}>
+      <Layout className="fill-workspace rounded shadow-sm overflow-hidden">
+        <Sidebar />
+        {record ? (
+          <>
+            <ChatContent />
+            {rightSidebarVisible && <RightSideBar />}
+          </>
+        ) : (
+          <Row
+            type="flex"
+            align="middle"
+            justify="center"
+            className="px-3 bg-white mh-page"
+            style={{
+              minHeight: "100vh",
+              width: "100%",
+            }}
+          >
+            <Result
+              icon={<img width="300" src="/logo-chat.png" />}
+              title="Welcome to Awesome Chat"
+              subTitle="On Being Awesome"
+            />
+          </Row>
+        )}
       </Layout>
-    );
-  
-  
+    </Layout>
+  );
 }

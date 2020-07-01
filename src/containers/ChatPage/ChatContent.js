@@ -60,11 +60,11 @@ function ChatContent() {
       }}
     >
       <ChatContentHeader />
-      {record.messages && (
+      {/* {record.messages && ( */}
         <ChatStyled ref={scrollRef}>
           <Conversation  />
         </ChatStyled>
-       )} 
+       {/* )}  */}
       <div className="px-3 py-2" style={{ background: "#f9f9f9" }}>
         {/* {inputMessage && inputMessage.images.length > 0 && ( */}
           <ImageUploadList

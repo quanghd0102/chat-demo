@@ -9,9 +9,11 @@ import Carousel, { Modal, ModalGateway } from "react-images";
 import actions from "./actions";
 import InfiniteScroll from "react-infinite-scroller";
 
-function Conversation({ messages }) {
+function Conversation() {
   const dispatch = useDispatch();
   const record = useSelector(selectors.selectRecord);
+  // const messages = useSelector(selectors.selectMessages);
+  const messages = useSelector((state) => state.message.messages);
   const typing = useSelector(selectors.selectTyping);
   const hasMoreConversation = useSelector(selectors.selectHasMoreConversation);
   const sending = useSelector(selectors.selectSending);
@@ -19,7 +21,7 @@ function Conversation({ messages }) {
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const [imageViewModelVisible, setImageViewModelVisible] = useState(false);
   const [currentImageViewIndex, setCurrentImageViewIndex] = useState(0);
-
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
   let imagesList = [];
 
   const loadMoreConversation = () => {
@@ -33,15 +35,15 @@ function Conversation({ messages }) {
   };
 
   const renderConversation = (messages) => {
-    if (!currentUser) return <span></span>;
+    // if (!currentUser) return <span></span>;
     return messages.map((chat, index) => {
-      if (chat.type === "notification") {
-        return (
-          <div key={index} className="notification-message">
-            <span>{chat.message}</span>
-          </div>
-        );
-      }
+      // if (chat.type === "notification") {
+      //   return (
+      //     <div key={index} className="notification-message">
+      //       <span>{chat.message}</span>
+      //     </div>
+      //   );
+      // }
       return (
         <div
           key={index}
@@ -50,7 +52,7 @@ function Conversation({ messages }) {
             justifyContent: "flex-start",
           }}
         >
-          <div style={{ width: 30, marginRight: "5px" }}>
+          {/* <div style={{ width: 30, marginRight: "5px" }}>
             {currentUser && chat.sender._id !== currentUser.id && record && (
               <Tooltip
                 title={
@@ -69,24 +71,24 @@ function Conversation({ messages }) {
                 />
               </Tooltip>
             )}
-          </div>
+          </div> */}
           <div
             key={index}
             className={`conversation
                        						 ${
-                                     chat.sender._id === currentUser.id
+                                     chat.senderId === userLoginLocalStorage.id
                                        ? "conversation-sent"
                                        : "conversation-received"
                                    }`}
           >
-            {chat.sender._id === currentUser.id ? (
+            {chat.senderId === userLoginLocalStorage.id ? (
               // Nếu người gửi là user hiện tại
               <>
-                {chat.type === "text" ? (
+                {/* {chat.type === "text" ? ( */}
                   <div className={`body body-sent`}>
                     <span color="inherit">{chat.message}</span>
                   </div>
-                ) : chat.type === "image" && chat.images.length > 0 ? (
+                {/* ) : chat.type === "image" && chat.images.length > 0 ? (
                   <div
                     className={`body-sent-no-backdround`}
                     style={{ maxWidth: "80%" }}
@@ -129,7 +131,7 @@ function Conversation({ messages }) {
                       </div>
                     ))}
                   </div>
-                ) : null}
+                ) : null} */}
               </>
             ) : (
               // Nếu người gửi không phải là user hiện tại
