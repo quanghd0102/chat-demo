@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon, Spin, Tooltip } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
@@ -8,6 +8,7 @@ import TypingIndicator from "../../components/TypingIndicator";
 import Carousel, { Modal, ModalGateway } from "react-images";
 import actions from "./actions";
 import InfiniteScroll from "react-infinite-scroller";
+import { loadMessage, getPrivateMessage } from "../../features/messageSlice";
 
 function Conversation() {
   const dispatch = useDispatch();
@@ -21,16 +22,28 @@ function Conversation() {
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const [imageViewModelVisible, setImageViewModelVisible] = useState(false);
   const [currentImageViewIndex, setCurrentImageViewIndex] = useState(0);
-  const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
   let imagesList = [];
+  const receiver = useSelector(selectors.selectReceiver);
 
   const loadMoreConversation = () => {
-    dispatch(actions.doFind(record.receiver.id, record.messages.length));
+    // dispatch(actions.doFind(record.receiver.id, record.messages.length));
   };
 
-  const getFullName = (record) => {
-    if (record && record.firstname && record.lastname)
-      return record.firstname + " " + record.lastname;
+  useEffect(() => {
+    console.log("messages effect", messages);
+    
+    const data = {
+      senderId: userLoginLocalStorage.id,
+      receiverId: receiver.id,
+    };
+    console.log("data id", data);
+    // dispatch(loadMessage(data));
+    // dispatch(getPrivateMessage(data));
+  }, [receiver.id]);
+
+  const getFullName = (user) => {
+    if (user) return user.firstname + " " + user.lastname;
     return "";
   };
 
@@ -52,26 +65,21 @@ function Conversation() {
             justifyContent: "flex-start",
           }}
         >
-          {/* <div style={{ width: 30, marginRight: "5px" }}>
-            {currentUser && chat.sender._id !== currentUser.id && record && (
-              <Tooltip
-                title={
-                  record.conversationType === "ChatGroup"
-                    ? getFullName(chat.sender)
-                    : getFullName(chat.receiver)
-                }
-              >
+          <div style={{ width: 30, marginRight: "5px" }}>
+            {chat.senderId !== userLoginLocalStorage.id && record && (
+              <Tooltip title={getFullName(receiver)}>
                 <AvatarCus
                   record={
-                    record.conversationType === "ChatGroup"
-                      ? chat.sender
-                      : record.receiver
+                    // record.conversationType === "ChatGroup"
+                    // ? chat.sender
+                    userLoginLocalStorage
+                    // receiver
                   }
                   size={30}
                 />
               </Tooltip>
             )}
-          </div> */}
+          </div>
           <div
             key={index}
             className={`conversation
@@ -85,9 +93,9 @@ function Conversation() {
               // Nếu người gửi là user hiện tại
               <>
                 {/* {chat.type === "text" ? ( */}
-                  <div className={`body body-sent`}>
-                    <span color="inherit">{chat.message}</span>
-                  </div>
+                <div className={`body body-sent`}>
+                  <span color="inherit">{chat.message}</span>
+                </div>
                 {/* ) : chat.type === "image" && chat.images.length > 0 ? (
                   <div
                     className={`body-sent-no-backdround`}
@@ -136,61 +144,19 @@ function Conversation() {
             ) : (
               // Nếu người gửi không phải là user hiện tại
               <>
-                {chat.type === "text" ? (
-                  <div className={`body body-received text-body`}>
-                    {record.conversationType === "group" && (
-                      <p
-                        style={{
-                          color: "#868686",
-                          fontSize: "12px",
-                        }}
-                      >
-                        {chat.sender.firstname}
-                      </p>
-                    )}
-                    <p color="inherit">{chat.message}</p>
-                  </div>
-                ) : chat.type === "image" && chat.images.length > 0 ? (
-                  <div style={{ maxWidth: "80%" }}>
-                    {chat.images.map((image, key) => (
-                      <div
-                        key={key}
-                        style={{
-                          backgroundImage: `url(${process.env.REACT_APP_STATIC_PHOTOS}/${image})`,
-                        }}
-                        className="photo"
-                        onClick={() => {
-                          setImageViewModelVisible(true);
-                          setCurrentImageViewIndex(
-                            imagesList
-                              .map((e) => e.src)
-                              .indexOf(
-                                `${process.env.REACT_APP_STATIC_PHOTOS}/${image}`
-                              )
-                          );
-                        }}
-                      ></div>
-                    ))}
-                  </div>
-                ) : chat.type === "file" ? (
-                  <div className={`body body-received`}>
-                    {chat.files.map((file, key) => (
-                      <div key={key}>
-                        <a
-                          key={key}
-                          target="_blank"
-                          style={{
-                            textDecoration: "underline",
-                            color: "rgba(0, 0, 0, 0.65)",
-                          }}
-                          href={`${process.env.REACT_APP_STATIC_FILES}/${file.path}`}
-                        >
-                          <Icon type="paper-clip" /> {file.name}
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
+                <div className={`body body-received text-body`}>
+                  {/* {record.conversationType === "group" && ( */}
+                  <p
+                    style={{
+                      color: "#868686",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {userLoginLocalStorage.firstname}
+                  </p>
+                  {/* )} */}
+                  <p color="inherit">{chat.message}</p>
+                </div>
               </>
             )}
           </div>

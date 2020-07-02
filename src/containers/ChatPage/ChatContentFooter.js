@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Upload, Button, Input, Popover } from "antd";
 import { Image, Send, Smile, Paperclip } from "react-feather";
 import { useSelector, useDispatch } from "react-redux";
@@ -12,7 +12,7 @@ import { Picker } from "emoji-mart";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { database } from "../../services/firebase";
 import { v4 as uuidv4 } from "uuid";
-import {getPrivateMessage} from "../../features/messageSlice";
+import { getPrivateMessage, loadMessage } from "../../features/messageSlice";
 
 let typingTimer = null;
 
@@ -65,26 +65,64 @@ function ChatContentFooter() {
     onInputMessageChange(inputMessage.text + e.native);
     if (!isMobileDevice) inputMessageRef.current.focus();
   };
-
+  
   const sendText = () => {
     if (inputMessage.text.trim() !== "") {
       // Gửi text và emoji
-      // if(database.hasChild(`${userLoginLocalStorage.id}-${receiver.id}`)){
-
-      // }
+      console.log("receiver id check coi giống k", receiver.id);
       database
-        .ref(`${userLoginLocalStorage.id}-${receiver.id}/` + uuidv4())
-        .set({
-          message: inputMessage.text,
-          senderId: userLoginLocalStorage.id,
-          receiverId: receiver.id,
+        .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}`)
+        .once("value", (snapshot) => {
+          if (snapshot.exists()) {
+            console.log("có rồi");
+            database
+              .ref(
+                `messages/${userLoginLocalStorage.id}-${receiver.id}/` +
+                  uuidv4()
+              )
+              .set({
+                message: inputMessage.text,
+                senderId: userLoginLocalStorage.id,
+                receiverId: receiver.id,
+                timestamp: Date.now(),
+              });
+          }
+          else{
+            return "";
+          }
         });
-        // const data = {
-        //   senderId: userLoginLocalStorage.id,
-        //   receiverId: receiver.id, 
-        // }
-        
-        // dispatch(getPrivateMessage(data))
+      database
+        .ref(`messages/${receiver.id}-${userLoginLocalStorage.id}`)
+        .once("value", (snapshot) => {
+          if (snapshot.exists()) {
+            database
+              .ref(
+                `messages/${receiver.id}-${userLoginLocalStorage.id}/` +
+                  uuidv4()
+              )
+              .set({
+                message: inputMessage.text,
+                senderId: userLoginLocalStorage.id,
+                receiverId: receiver.id,
+                timestamp: Date.now(),
+              });
+          }else{
+            return ""
+          }
+        });
+
+      // database
+      // .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}/` + uuidv4())
+      //   .set({
+      //     message: inputMessage.text,
+      //     senderId: userLoginLocalStorage.id,
+      //     receiverId: receiver.id,
+      //   });
+      // const data = {
+      //   senderId: userLoginLocalStorage.id,
+      //   receiverId: receiver.id,
+      // }
+      // dispatch(getPrivateMessage(data));
       dispatch(
         actions.doCreateConversation({
           message: inputMessage.text,

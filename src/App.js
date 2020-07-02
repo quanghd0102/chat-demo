@@ -7,7 +7,9 @@ import CallPage from './containers/CallPage';
 import Spinner from './containers/shared/Spinner';
 import {Provider} from 'react-redux';
 import  store  from './store';
-import {getHistory} from "./store"
+import {getHistory} from "./store";
+import './style.css';
+
 
 // const store = configStore();
 function App() {

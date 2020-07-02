@@ -14,18 +14,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
 
   useEffect(() => {
-    // if (isAuthenticated()) {
-    //   configSocket();
-    // }
-    console.log("userLogin", userLogin);
-    console.log("userLoginLocalStorage", userLoginLocalStorage);
-
     
-
-    // dispatch(socketActions.doConnect());
-    // if (!currentUser && isAuthenticated()) {
-    //   dispatch(userActions.getCurrent());
-    // }
   });
   return (
     <Route

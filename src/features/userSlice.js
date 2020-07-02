@@ -35,6 +35,7 @@ export const getAllUserFromFirestore = createAsyncThunk("users", async () => {
   }
 });
 
+
 export const loadData = () => {
   return (dispatch, getState) => {
     ref.on("child_added", (snapshot) => {

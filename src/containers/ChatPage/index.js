@@ -15,7 +15,6 @@ import { getAllUserFromDatabase } from "../../features/userSlice";
 import { getGeneralMessage, getPrivateMessage, loadMessage } from "../../features/messageSlice";
 import { manageAddFr } from "../../features/contactSlice";
 import { actions } from "../../features/messageSlice";
-import {addNewNodeChat} from "../../services/firebase";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));
@@ -41,7 +40,6 @@ export default function ChatPage() {
     dispatch(getAllUserFromDatabase());
     dispatch(manageAddFr());
     dispatch(getGeneralMessage());
-    // dispatch(actions.list());
     dispatch(contactActions.listRequests());
     windowOnResize(window.innerWidth);
     window.addEventListener("resize", windowOnResize);
@@ -52,7 +50,8 @@ export default function ChatPage() {
   }, []);
   useEffect(() => {
     if (userId || userId === undefined) {
-      console.log("check nge", users);
+      console.log("user IF", userId);
+      
       let userChat = {};
       users.map((item) => {
         if (item.id === userId) {
@@ -60,12 +59,10 @@ export default function ChatPage() {
         }
       });
       const data = {
-        senderId: userLoginLocalStorage.id,
-        receiverId: userId, 
-      }
-      dispatch(loadMessage(data));
+            senderId: userLoginLocalStorage.id,
+            receiverId: userId, 
+          }
       dispatch(getPrivateMessage(data));
-      addNewNodeChat(userLoginLocalStorage.id, userChat.id)
       dispatch(actions.doSetReciver(userChat));
       dispatch(actions.doFind(userId));
     }

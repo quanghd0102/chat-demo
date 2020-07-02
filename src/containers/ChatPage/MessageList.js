@@ -15,10 +15,17 @@ const MessageList = () => {
   const dispatch = useDispatch();
   const { userId } = useParams();
   const users = useSelector(userSelectors.selectUsers);
+  // const friends = useSelector((state) => state.user.friends);
   const messages = useSelector(selectors.selectMessages);
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const messageListLoading = useSelector(selectors.selectMessageListLoading);
   const hasMoreMessageList = useSelector(selectors.selectHasMoreMessageList);
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
+
+  const friends = users.filter(
+    (item) => item.id !== userLoginLocalStorage.id
+  );
+  
 
   const loadMoreMessageList = () => {
     let gskip = 0;
@@ -42,7 +49,7 @@ const MessageList = () => {
         <List
           style={{ marginTop: "5px" }}
           itemLayout="horizontal"
-          dataSource={users}
+          dataSource={friends}
           renderItem={(item, index) => {
             // if (!currentUser) return <span></span>;
             let user = item;

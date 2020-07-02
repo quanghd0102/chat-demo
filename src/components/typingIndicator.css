@@ -81,3 +81,8 @@ body {
   display: table-cell;
   vertical-align: middle;
 }
+
+.sc-AxhCb .hAUyAW{
+  overflow-y: scroll;
+  height: 430px;
+}

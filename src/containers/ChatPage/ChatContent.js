@@ -14,15 +14,20 @@ import ChatStyled from "./styles/chat";
 import { useParams } from "react-router-dom";
 import actions from "./actions";
 import layoutSelectors from "../Layout/selectors";
+import {loadMessage} from "../../features/messageSlice";
+
 
 function ChatContent() {
   const scrollRef = useRef();
   const dispatch = useDispatch();
   let { userId } = useParams();
+  const receiver = useSelector(selectors.selectReceiver);
   const record = useSelector(selectors.selectRecord);
   const inputMessage = useSelector(selectors.selectInputMessage);
   const isScrollToBottom = useSelector(selectors.selectScrollToBottom);
   const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
+  const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
+
   const rightSidebarVisible = useSelector(
     layoutSelectors.selectRightSidebarVisible
   );
@@ -49,6 +54,8 @@ function ChatContent() {
     scrollToBottom();
     dispatch(actions.doToggleScrollToBottom());
   }
+
+
   useEffect(() => {
     scrollToBottom();
   }, [userId]);
