@@ -12,34 +12,29 @@ export const getGeneralMessage = createAsyncThunk("general/", async () => {
         message.push(mess);
       });
     });
+    console.log("general mess", message);
     return message;
+    
+    
   } catch (ex) {
     console.log(ex);
   }
 });
 
 export const getPrivateMessage = createAsyncThunk(
-  `privateChat/`,
+  "privateChat/",
   async (data) => {
     try {
-      console.log(
-        "${loginId}${receiverId}",
-        `${data.senderId}-${data.receiverId}/`
-      );
       const ref = database.ref(`messages/${data.senderId}-${data.receiverId}/`);
-      console.log("ref", ref);
-      const message = [];
-      await ref.on("value", (snap) => {
-        console.log("vao day");
-        snap.forEach((data) => {
-          let mess = data.val();
-          console.log("mess", mess);
-          message.push(mess);
-          console.log("message", message);
-        });
-        console.log("message private", message);
-        return message;
+      let responseData = [];
+      const snapshot = await ref.once("value");
+      console.log('get message,', snapshot)
+      snapshot.forEach((data) => {
+        console.log("mes dataa", data.val());
+        responseData.push(data.val());
       });
+      console.log("responseData", responseData);
+      return responseData;
     } catch (ex) {
       console.log(ex);
     }
@@ -58,8 +53,10 @@ export const loadMessage = (data) => {
             `messages/${data.senderId}-${data.receiverId}/`
           );
           ref.on("child_added", (snapshot) => {
-            console.log("loadmessages", snapshot.val());
-            dispatch(actions.addMessage(snapshot.val()));
+            dispatch(actions.addMessage({
+              chatId: `${data.senderId}-${data.receiverId}`,
+              messages: snapshot.val(),
+            }));
           });
         }
       });
@@ -67,13 +64,14 @@ export const loadMessage = (data) => {
       .ref(`messages/${data.receiverId}-${data.senderId}/`)
       .once("value", (snapshot) => {
         if (snapshot.exists()) {
-          console.log("có rồi");
           const ref = database.ref(
             `messages/${data.receiverId}-${data.senderId}/`
           );
           ref.on("child_added", (snapshot) => {
-            console.log("loadmessages", snapshot.val());
-            dispatch(actions.addMessage(snapshot.val()));
+            dispatch(actions.addMessage({
+              chatId: `${data.senderId}-${data.receiverId}`,
+              messages: snapshot.val(),
+            }));
           });
         }
       });
@@ -83,6 +81,7 @@ export const loadMessage = (data) => {
 const messageSlice = createSlice({
   name: "message",
   initialState: {
+    isLoading: false,
     initLoading: true,
     messageListLoading: true,
     hasMoreMessageList: true,
@@ -101,6 +100,7 @@ const messageSlice = createSlice({
     },
     receiver: {},
     messages: [],
+    chatData: {},
     inputMesage: {
       images: [],
       text: "",
@@ -124,26 +124,52 @@ const messageSlice = createSlice({
     },
     doCreateConversation: (state, action) => {},
     addMessage: (state, action) => {
-      // state.messages.push(action.payload);
-      // action.payload.sort(function (a, b) { return a.timestamp - b.timestamp })
-      console.log("meejt roofi", state.messages);
-
-      state.messages = [...state.messages, action.payload];
+      // state.messages = [...state.messages, action.payload];
+      state.chatData = {
+        [action.payload.chatId]: [...(state.chatData[action.payload.chatId] || []), action.payload.messages]
+      }
     },
   },
   extraReducers: {
-    [getGeneralMessage.fullfilled]: (state, action) => {
-      state.generalMessage = action.payload;
+    [getGeneralMessage.pending]: (state, action) => {
+      if (state.isLoading === false) {
+        state.isLoading = true;
+      }
     },
-    [getPrivateMessage.fullfilled]: (state, action) => {
-      // action.payload.sort(function (a, b) { return a.timestamp - b.timestamp })
-      console.log("tired", action.payload);
-
-      state.messages = action.payload;
-      console.log("getPrivateMessage", state.messages);
+    [getGeneralMessage.fulfilled]: (state, action) => {
+      if (state.isLoading === true) {
+        action.payload.sort((a, b) => {
+          return a.timestamp - b.timestamp;
+        });
+        console.log("check state general mess", action.payload);
+        state.generalMessage = action.payload;
+      }
+    },
+    [getGeneralMessage.rejected]: (state, action) => {
+      if (state.isLoading === true) {
+        state.isLoading = false;
+        state.error = action.payload;
+      }
+    },
+    [getPrivateMessage.pending]: (state, action) => {
+      if (state.isLoading === false) {
+        state.isLoading = true;
+      }
+    },
+    [getPrivateMessage.fulfilled]: (state, action) => {
+      if (state.isLoading === true) {
+        action.payload.sort((a, b) => {
+          return a.timestamp - b.timestamp;
+        });
+        console.log("check state mess", action.payload);
+        state.messages = action.payload;
+      }
     },
     [getPrivateMessage.rejected]: (state, action) => {
-      console.log("lỗi", action.payload);
+      if (state.isLoading === true) {
+        state.isLoading = false;
+        state.error = action.payload;
+      }
     },
   },
 });

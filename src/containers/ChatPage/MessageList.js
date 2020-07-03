@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Icon, List, Spin } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
-import actions from "./actions";
+// import actions from "./actions";
 import { Link, useParams } from "react-router-dom";
 import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
@@ -10,22 +10,25 @@ import InfiniteScroll from "react-infinite-scroller";
 import { formatDistanceToNowStrict } from "date-fns";
 import { textAbstract } from "../shared/helper";
 import { current } from "@reduxjs/toolkit";
+import actions from "../../features/messageSlice";
 
 const MessageList = () => {
   const dispatch = useDispatch();
   const { userId } = useParams();
   const users = useSelector(userSelectors.selectUsers);
   // const friends = useSelector((state) => state.user.friends);
-  const messages = useSelector(selectors.selectMessages);
+  // const messages = useSelector(selectors.selectMessages);
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const messageListLoading = useSelector(selectors.selectMessageListLoading);
   const hasMoreMessageList = useSelector(selectors.selectHasMoreMessageList);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
-
-  const friends = users.filter(
-    (item) => item.id !== userLoginLocalStorage.id
-  );
+  const messages = useSelector((state) => state.message.chatData);
+  const friends = users.filter((item) => item.id !== userLoginLocalStorage.id);
+  const [isActive, setIsActive] = useState(false);
+  const receiver = useSelector(selectors.selectReceiver);
+  console.log("coi rêciver", receiver);
   
+ 
 
   const loadMoreMessageList = () => {
     let gskip = 0;
@@ -46,13 +49,68 @@ const MessageList = () => {
         hasMore={!messageListLoading && hasMoreMessageList}
         useWindow={false}
       >
+        <Link to={`/m/general`}>
+          <List.Item
+            style={{
+              backgroundColor: userId ? "#fff" : "#e6f7ff",
+              cursor: "pointer",
+              borderRadius: "0.8rem",
+            }}
+            className={`${"border-0"} border-0 px-4 py-3`}
+          >
+            <List.Item.Meta
+              avatar={<AvatarCus Icon="user" />}
+              title={
+                <p
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      flex: 1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {
+                      // ? textAbstract(item.receiver.name, 20)
+                      "General"
+                    }
+                  </span>
+                  <small></small>
+                </p>
+              }
+              description={
+                <p
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    width: "200px",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {"Messages(s)"}
+                </p>
+              }
+            />
+          </List.Item>
+        </Link>
         <List
           style={{ marginTop: "5px" }}
           itemLayout="horizontal"
           dataSource={friends}
           renderItem={(item, index) => {
-            // if (!currentUser) return <span></span>;
+            if (!userLoginLocalStorage) return <span></span>;
             let user = item;
+
+            // if(user){
+            //   dispatch(actions.doSetReciver(user));
+            // }
             // if (item.conversationType === "ChatGroup") {
             //   user = item.receiver;
             // } else {
@@ -62,99 +120,78 @@ const MessageList = () => {
             //       : item.sender;
             // }
             return (
-              <Link to={`/m/${user.id}`}>
-                <List.Item
-                  style={{
-                    backgroundColor: user.id === userId ? "#e6f7ff" : "#fff",
-                    cursor: "pointer",
-                    borderRadius: "0.8rem",
-                  }}
-                  className={`${
-                    user.id === userId ? "" : "border-0"
-                  } border-0 px-4 py-3`}
-                >
-                  <List.Item.Meta
-                    avatar={<AvatarCus record={user} />}
-                    title={
-                      <p
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
-                        }}
-                      >
-                        <span
+              <>
+                <Link to={`/m/${user.id}`}>
+                  <List.Item
+                    style={{
+                      backgroundColor: user.id === userId ? "#e6f7ff" : "#fff",
+                      cursor: "pointer",
+                      borderRadius: "0.8rem",
+                    }}
+                    className={`${
+                      user.id === userId ? "" : "border-0"
+                    } border-0 px-4 py-3`}
+                  >
+                    <List.Item.Meta
+                      avatar={<AvatarCus record={user} />}
+                      title={
+                        <p
                           style={{
-                            fontSize: "14px",
-                            flex: 1,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "14px",
+                              flex: 1,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {
+                              // ? textAbstract(item.receiver.name, 20)
+                              textAbstract(
+                                user.firstname + " " + user.lastname,
+                                20
+                              )
+                            }
+                          </span>
+                          <small>
+                            {item.updatedAt
+                              ? formatDistanceToNowStrict(
+                                  new Date(item.updatedAt),
+                                  {
+                                    addSuffix: false,
+                                  }
+                                )
+                              : ""}
+                          </small>
+                        </p>
+                      }
+                      description={
+                        <p
+                          style={{
                             whiteSpace: "nowrap",
                             overflow: "hidden",
+                            width: "200px",
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {item.conversationType === "ChatGroup"
-                            ? textAbstract(item.receiver.name, 20)
-                            : textAbstract(
-                                user.firstname + " " + user.lastname,
-                                20
-                              )}
-                        </span>
-                        <small>
-                          {item.updatedAt
-                            ? formatDistanceToNowStrict(
-                                new Date(item.updatedAt),
-                                {
-                                  addSuffix: false,
-                                }
-                              )
-                            : ""}
-                        </small>
-                      </p>
-                    }
-                    description={
-                      <p
-                        style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          width: "200px",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {item.type === "text" ||
-                        item.type === "notification" ? (
-                          item.message ? (
-                            item.message
-                          ) : (
-                            ""
-                          )
-                        ) : item.type === "image" ? (
-                          <>
-                            <Icon type="file-image" />
-                            Photo(s)
-                          </>
-                        ) : item.type === "file" ? (
-                          <>
-                            <Icon type="paper-clip" />
-                            File(s)
-                          </>
-                        ) : null}
-                      </p>
-                    }
-                  />
-                </List.Item>
-              </Link>
+                          {"Messages(s)"}
+                        </p>
+                      }
+                    />
+                  </List.Item>
+                </Link>
+              </>
             );
           }}
-        >
-          {/* <div style={{ textAlign: "center" }}>
-              <Spin spinning={messageListLoading && hasMoreMessageList}></Spin>
-            </div> */}
-        </List>
+        ></List>
       </InfiniteScroll>
     </div>
   );
-  // } else {
-  //   return <div></div>;
-  // }
 };
 export default MessageList;

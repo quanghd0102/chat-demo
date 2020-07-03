@@ -31,6 +31,10 @@ export default function ChatPage() {
   const record = useSelector(selectors.selectRecord);
   const users = useSelector(userSelectors.selectUsers);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
+  const currentMessages = useSelector(
+    (state) =>
+      state.message.chatData 
+  );
 
   const windowOnResize = () => {
     dispatch(layoutActions.doWindowResize(window.innerWidth));
@@ -51,7 +55,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (userId || userId === undefined) {
       console.log("user IF", userId);
-      
+      console.log("all mess", currentMessages);
       let userChat = {};
       users.map((item) => {
         if (item.id === userId) {
@@ -62,9 +66,10 @@ export default function ChatPage() {
             senderId: userLoginLocalStorage.id,
             receiverId: userId, 
           }
-      dispatch(getPrivateMessage(data));
+      // dispatch(getPrivateMessage(data));
       dispatch(actions.doSetReciver(userChat));
       dispatch(actions.doFind(userId));
+      console.log('asdasd')
     }
   }, [userId]);
 

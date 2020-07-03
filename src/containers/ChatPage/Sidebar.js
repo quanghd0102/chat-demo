@@ -25,7 +25,6 @@ import userSelectors from "../UserPage/selectors";
 import contactSelectors from "../ContactPage/selectors";
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
-import layoutSelectors from "../Layout/selectors";
 import { getSetting, setSetting } from "../shared/settings";
 import { doSignout } from "../../features/authSlice";
 import { firebase } from "../../services/firebase";
@@ -40,27 +39,11 @@ function ChatSidebar() {
     modalCreateGroupChatVisible,
     setModalCreateGroupChatVisible,
   ] = useState(false);
-  const currentUser = useSelector(userSelectors.selectCurrentUser);
-  const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
-  const leftSidebarVisible = useSelector(
-    layoutSelectors.selectLeftSidebarVisible
-  );
-  // const userLoginLocalStorage = useSelector((state) => state.auth.userLogin);
   const requests = useSelector(contactSelectors.selectRequests);
   const [playSound, setPlaySound] = useState(getSetting().sound);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
-  // const messageFooter = (
-  //     <div className="py-3 px-3" style={{ backgroundColor: "#fff" }}>
-  //         <Search placeholder="Search contact" />
-  //     </div>
-  // );
-
-  // const signout = () =>{
-  //     dispatch(doSignout());
-  // }
 
   const signout = async () => {
-    // console.log("logout user", currentUserLogin);
     localStorage.removeItem("userLogin");
     await firebase.auth().signOut();
     dispatch(doSignout());
@@ -115,20 +98,8 @@ function ChatSidebar() {
           textAlign: "center",
         }}
       >
-        
         <Users size={20} strokeWidth={1} />
       </Menu.Item>
-      {/* <Menu.Item
-                key="notification"
-                style={{
-                    width: "25%",
-                    textAlign: "center"
-                }}
-            >
-                <Badge dot={true}>
-                    <Bell size={20} strokeWidth={1} />
-                </Badge>
-            </Menu.Item> */}
     </Menu>
   );
 
@@ -217,15 +188,7 @@ function ChatSidebar() {
   );
 
   return (
-    <Sider
-    // width={
-    //     isMobileDevice && leftSidebarVisible
-    //         ? "100vw"
-    //         : isMobileDevice && !leftSidebarVisible
-    //         ? "0"
-    //         : "300"
-    // }
-    >
+    <Sider>
       <ModalCreateGroupchat
         visible={modalCreateGroupChatVisible}
         doToggle={() =>
@@ -244,7 +207,6 @@ function ChatSidebar() {
       >
         {userInfo}
         {messageHeader}
-        {/* {messageFooter} */}
         {messagesSidebar()}
       </div>
     </Sider>

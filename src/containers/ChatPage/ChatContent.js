@@ -14,7 +14,6 @@ import ChatStyled from "./styles/chat";
 import { useParams } from "react-router-dom";
 import actions from "./actions";
 import layoutSelectors from "../Layout/selectors";
-import {loadMessage} from "../../features/messageSlice";
 
 
 function ChatContent() {

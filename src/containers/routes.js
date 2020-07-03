@@ -32,6 +32,11 @@ const privateRoutes = [
     loader: () => import("./ChatPage/index"),
   },
   {
+    path: "/m/general/",
+    exact: true,
+    loader: () => import("./ChatPage/index"),
+  },
+  {
     path: "/call",
     exact: true,
     loader: () => import("./CallPage/index"),

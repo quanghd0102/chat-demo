@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Icon, Spin, Tooltip } from "antd";
+import { Icon, Spin, Tooltip, message } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 import userSelectors from "../UserPage/selectors";
@@ -13,8 +13,8 @@ import { loadMessage, getPrivateMessage } from "../../features/messageSlice";
 function Conversation() {
   const dispatch = useDispatch();
   const record = useSelector(selectors.selectRecord);
-  // const messages = useSelector(selectors.selectMessages);
   const messages = useSelector((state) => state.message.messages);
+  const generalMessages = useSelector((state) => state.message.generalMessage);
   const typing = useSelector(selectors.selectTyping);
   const hasMoreConversation = useSelector(selectors.selectHasMoreConversation);
   const sending = useSelector(selectors.selectSending);
@@ -25,21 +25,22 @@ function Conversation() {
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
   let imagesList = [];
   const receiver = useSelector(selectors.selectReceiver);
-
+  const currentMessages = useSelector(
+    (state) =>
+      state.message.chatData &&
+      state.message.chatData[`${userLoginLocalStorage.id}-${receiver.id}`]
+  );
+  console.log("gennnnnnnnnnnn", generalMessages);
   const loadMoreConversation = () => {
     // dispatch(actions.doFind(record.receiver.id, record.messages.length));
   };
 
   useEffect(() => {
-    console.log("messages effect", messages);
-    
     const data = {
       senderId: userLoginLocalStorage.id,
       receiverId: receiver.id,
     };
-    console.log("data id", data);
-    // dispatch(loadMessage(data));
-    // dispatch(getPrivateMessage(data));
+    dispatch(loadMessage(data));
   }, [receiver.id]);
 
   const getFullName = (user) => {
@@ -47,122 +48,127 @@ function Conversation() {
     return "";
   };
 
-  const renderConversation = (messages) => {
-    // if (!currentUser) return <span></span>;
-    return messages.map((chat, index) => {
-      // if (chat.type === "notification") {
-      //   return (
-      //     <div key={index} className="notification-message">
-      //       <span>{chat.message}</span>
-      //     </div>
-      //   );
-      // }
+  const renderConversation = (currentMessages,generalMessages) => {
+    console.log('generalMessages',generalMessages);
+    console.log('cur',currentMessages);
+    console.log('receiver',receiver);
+
+    if (receiver) {
       return (
-        <div
-          key={index}
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-          }}
-        >
-          <div style={{ width: 30, marginRight: "5px" }}>
-            {chat.senderId !== userLoginLocalStorage.id && record && (
-              <Tooltip title={getFullName(receiver)}>
-                <AvatarCus
-                  record={
-                    // record.conversationType === "ChatGroup"
-                    // ? chat.sender
-                    userLoginLocalStorage
-                    // receiver
-                  }
-                  size={30}
-                />
-              </Tooltip>
-            )}
-          </div>
-          <div
-            key={index}
-            className={`conversation
-                       						 ${
-                                     chat.senderId === userLoginLocalStorage.id
-                                       ? "conversation-sent"
-                                       : "conversation-received"
-                                   }`}
-          >
-            {chat.senderId === userLoginLocalStorage.id ? (
-              // Nếu người gửi là user hiện tại
-              <>
-                {/* {chat.type === "text" ? ( */}
-                <div className={`body body-sent`}>
-                  <span color="inherit">{chat.message}</span>
-                </div>
-                {/* ) : chat.type === "image" && chat.images.length > 0 ? (
-                  <div
-                    className={`body-sent-no-backdround`}
-                    style={{ maxWidth: "80%" }}
-                  >
-                    {chat.images.map((image, key) => (
-                      <div
-                        key={key}
+        currentMessages &&
+        currentMessages.map((chat, index) => {
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              <div style={{ width: 30, marginRight: "5px" }}>
+                {chat.senderId !== userLoginLocalStorage.id && record && (
+                  <Tooltip title={getFullName(receiver)}>
+                    <AvatarCus record={userLoginLocalStorage} size={30} />
+                  </Tooltip>
+                )}
+              </div>
+              <div
+                key={index}
+                className={`conversation
+                                      ${
+                                        chat.senderId ===
+                                        userLoginLocalStorage.id
+                                          ? "conversation-sent"
+                                          : "conversation-received"
+                                      }`}
+              >
+                {chat.senderId === userLoginLocalStorage.id ? (
+                  // Nếu người gửi là user hiện tại
+                  <>
+                    <div className={`body body-sent`}>
+                      <span color="inherit">{chat.message}</span>
+                    </div>
+                  </>
+                ) : (
+                  // Nếu người gửi không phải là user hiện tại
+                  <>
+                    <div className={`body body-received text-body`}>
+                      <p
                         style={{
-                          backgroundImage: `url(${process.env.REACT_APP_STATIC_PHOTOS}/${image})`,
+                          color: "#868686",
+                          fontSize: "12px",
                         }}
-                        className="photo"
-                        onClick={() => {
-                          setImageViewModelVisible(true);
-                          setCurrentImageViewIndex(
-                            imagesList
-                              .map((e) => e.src)
-                              .indexOf(
-                                `${process.env.REACT_APP_STATIC_PHOTOS}/${image}`
-                              )
-                          );
-                        }}
-                      ></div>
-                    ))}
-                  </div>
-                ) : chat.type === "file" ? (
-                  <div className={`body body-sent`}>
-                    {chat.files.map((file, key) => (
-                      <div key={key}>
-                        <a
-                          key={key}
-                          target="_blank"
-                          style={{
-                            textDecoration: "underline",
-                            color: "white",
-                          }}
-                          href={`${process.env.REACT_APP_STATIC_FILES}/${file.path}`}
-                        >
-                          <Icon type="paper-clip" /> {file.name}
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                ) : null} */}
-              </>
-            ) : (
-              // Nếu người gửi không phải là user hiện tại
-              <>
-                <div className={`body body-received text-body`}>
-                  {/* {record.conversationType === "group" && ( */}
-                  <p
-                    style={{
-                      color: "#868686",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {userLoginLocalStorage.firstname}
-                  </p>
-                  {/* )} */}
-                  <p color="inherit">{chat.message}</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+                      >
+                        {userLoginLocalStorage.firstname}
+                      </p>
+                      <p color="inherit">{chat.message}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })
       );
-    });
+    } else {
+      console.log("ahiahi");
+      return (
+        generalMessages &&
+        generalMessages.map((chat, index) => {
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              <div style={{ width: 30, marginRight: "5px" }}>
+                {chat.senderId !== userLoginLocalStorage.id && record && (
+                  <Tooltip title="General">
+                    <AvatarCus record={userLoginLocalStorage} size={30} />
+                  </Tooltip>
+                )}
+              </div>
+              <div
+                key={index}
+                className={`conversation
+                                      ${
+                                        chat.senderId ===
+                                        userLoginLocalStorage.id
+                                          ? "conversation-sent"
+                                          : "conversation-received"
+                                      }`}
+              >
+                {chat.senderId === userLoginLocalStorage.id ? (
+                  // Nếu người gửi là user hiện tại
+                  <>
+                    <div className={`body body-sent`}>
+                      <span color="inherit">{chat.message}</span>
+                    </div>
+                  </>
+                ) : (
+                  // Nếu người gửi không phải là user hiện tại
+                  <>
+                    <div className={`body body-received text-body`}>
+                      <p
+                        style={{
+                          color: "#868686",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {userLoginLocalStorage.firstname}
+                      </p>
+                      <p color="inherit">{chat.message}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })
+      );
+    }
   };
 
   const typIndicator = (
@@ -228,7 +234,9 @@ function Conversation() {
         <div style={{ textAlign: "center" }}>
           <Spin spinning={findLoading && hasMoreConversation}></Spin>
         </div>
-        {renderConversation(messages)}
+        {
+          renderConversation(currentMessages,generalMessages)
+          }
         {typing && typing.status && typIndicator}
         <div
           style={{

@@ -69,7 +69,6 @@ function ChatContentFooter() {
   const sendText = () => {
     if (inputMessage.text.trim() !== "") {
       // Gửi text và emoji
-      console.log("receiver id check coi giống k", receiver.id);
       database
         .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}`)
         .once("value", (snapshot) => {
@@ -110,26 +109,6 @@ function ChatContentFooter() {
             return ""
           }
         });
-
-      // database
-      // .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}/` + uuidv4())
-      //   .set({
-      //     message: inputMessage.text,
-      //     senderId: userLoginLocalStorage.id,
-      //     receiverId: receiver.id,
-      //   });
-      // const data = {
-      //   senderId: userLoginLocalStorage.id,
-      //   receiverId: receiver.id,
-      // }
-      // dispatch(getPrivateMessage(data));
-      dispatch(
-        actions.doCreateConversation({
-          message: inputMessage.text,
-          receiver: receiver.id,
-          // conversationType: record.conversationType,
-        })
-      );
       onInputMessageChange("");
     }
   };
