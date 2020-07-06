@@ -128,6 +128,9 @@ const authSlice = createSlice({
         console.log("vao do sign in action.payload", action, action.payload);
         state.userLogin = action.payload;
         console.log("state.userLogin", state.userLogin);
+        state.signinLoading = false;
+
+        
       }
     },
     [doSignin.rejected]: (state, action) => {

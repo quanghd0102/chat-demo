@@ -4,7 +4,11 @@ import { Eye, Mail } from "react-feather";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { actions, doSignin, doInitLoadingDone } from "../../../features/authSlice";
+import {
+  actions,
+  doSignin,
+  doInitLoadingDone,
+} from "../../../features/authSlice";
 import action from "../actions";
 import selectors from "../selectors";
 const FormItem = Form.Item;
@@ -28,10 +32,10 @@ const Signin = ({ form }) => {
   useEffect(() => {
     dispatch(action.doInitLoadingDone());
     console.log("signinLoading", signinLoading);
-    
   }, []);
   return (
-    <Spin spinning={initLoading}>
+    <Spin spinning={signinLoading}> 
+    {/* old: initLoading */}
       <Row
         type="flex"
         align="middle"
@@ -65,7 +69,6 @@ const Signin = ({ form }) => {
               form.validateFields((err, values) => {
                 if (!err) {
                   console.log("values login", values);
-
                   doSubmit(values);
                 }
               });
@@ -130,15 +133,15 @@ const Signin = ({ form }) => {
 
             <FormItem>
               {/* <Link to="/"> */}
-                <Button
-                  loading={signinLoading}
-                  type="primary"
-                  htmlType="submit"
-                  block
-                  className="mt-3"
-                >
-                  Login
-                </Button>
+              <Button
+                loading={signinLoading}
+                type="primary"
+                htmlType="submit"
+                block
+                className="mt-3"
+              >
+                Login
+              </Button>
               {/* </Link> */}
             </FormItem>
 

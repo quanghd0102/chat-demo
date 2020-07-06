@@ -13,6 +13,7 @@ import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { database } from "../../services/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { getPrivateMessage, loadMessage } from "../../features/messageSlice";
+import { id } from "date-fns/locale";
 
 let typingTimer = null;
 
@@ -65,50 +66,62 @@ function ChatContentFooter() {
     onInputMessageChange(inputMessage.text + e.native);
     if (!isMobileDevice) inputMessageRef.current.focus();
   };
-  
+
   const sendText = () => {
     if (inputMessage.text.trim() !== "") {
       // Gửi text và emoji
-      database
-        .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}`)
-        .once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            console.log("có rồi");
-            database
-              .ref(
-                `messages/${userLoginLocalStorage.id}-${receiver.id}/` +
-                  uuidv4()
-              )
-              .set({
-                message: inputMessage.text,
-                senderId: userLoginLocalStorage.id,
-                receiverId: receiver.id,
-                timestamp: Date.now(),
-              });
-          }
-          else{
-            return "";
-          }
+      if (
+        Object.keys(receiver).length === 0 &&
+        receiver.constructor === Object
+      ) {
+        database.ref("general/" + uuidv4()).set({
+          senderId: userLoginLocalStorage.id,
+          firstname: userLoginLocalStorage.firstname,
+          lastname: userLoginLocalStorage.lastname,
+          message: inputMessage.text,
+          timestamp: Date.now(),
         });
-      database
-        .ref(`messages/${receiver.id}-${userLoginLocalStorage.id}`)
-        .once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            database
-              .ref(
-                `messages/${receiver.id}-${userLoginLocalStorage.id}/` +
-                  uuidv4()
-              )
-              .set({
-                message: inputMessage.text,
-                senderId: userLoginLocalStorage.id,
-                receiverId: receiver.id,
-                timestamp: Date.now(),
-              });
-          }else{
-            return ""
-          }
-        });
+      } else {
+        database
+          .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}`)
+          .once("value", (snapshot) => {
+            if (snapshot.exists()) {
+              database
+                .ref(
+                  `messages/${userLoginLocalStorage.id}-${receiver.id}/` +
+                    uuidv4()
+                )
+                .set({
+                  message: inputMessage.text,
+                  senderId: userLoginLocalStorage.id,
+                  receiverId: receiver.id,
+                  timestamp: Date.now(),
+                });
+            } else {
+              return "";
+            }
+          });
+        database
+          .ref(`messages/${receiver.id}-${userLoginLocalStorage.id}`)
+          .once("value", (snapshot) => {
+            if (snapshot.exists()) {
+              database
+                .ref(
+                  `messages/${receiver.id}-${userLoginLocalStorage.id}/` +
+                    uuidv4()
+                )
+                .set({
+                  message: inputMessage.text,
+                  senderId: userLoginLocalStorage.id,
+                  receiverId: receiver.id,
+                  timestamp: Date.now(),
+                });
+            } else {
+              return "";
+            }
+          });
+      }
+
       onInputMessageChange("");
     }
   };

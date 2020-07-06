@@ -16,8 +16,6 @@ const MessageList = () => {
   const dispatch = useDispatch();
   const { userId } = useParams();
   const users = useSelector(userSelectors.selectUsers);
-  // const friends = useSelector((state) => state.user.friends);
-  // const messages = useSelector(selectors.selectMessages);
   const currentUser = useSelector(userSelectors.selectCurrentUser);
   const messageListLoading = useSelector(selectors.selectMessageListLoading);
   const hasMoreMessageList = useSelector(selectors.selectHasMoreMessageList);
@@ -26,9 +24,6 @@ const MessageList = () => {
   const friends = users.filter((item) => item.id !== userLoginLocalStorage.id);
   const [isActive, setIsActive] = useState(false);
   const receiver = useSelector(selectors.selectReceiver);
-  console.log("coi rêciver", receiver);
-  
- 
 
   const loadMoreMessageList = () => {
     let gskip = 0;
@@ -107,7 +102,6 @@ const MessageList = () => {
           renderItem={(item, index) => {
             if (!userLoginLocalStorage) return <span></span>;
             let user = item;
-
             // if(user){
             //   dispatch(actions.doSetReciver(user));
             // }

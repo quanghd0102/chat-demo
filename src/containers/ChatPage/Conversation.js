@@ -8,13 +8,15 @@ import TypingIndicator from "../../components/TypingIndicator";
 import Carousel, { Modal, ModalGateway } from "react-images";
 import actions from "./actions";
 import InfiniteScroll from "react-infinite-scroller";
-import { loadMessage, getPrivateMessage } from "../../features/messageSlice";
+import {
+  loadPrivateMessage,
+  loadGeneralMessage,
+} from "../../features/messageSlice";
 
 function Conversation() {
   const dispatch = useDispatch();
   const record = useSelector(selectors.selectRecord);
-  const messages = useSelector((state) => state.message.messages);
-  const generalMessages = useSelector((state) => state.message.generalMessage);
+  // const generalMessages = useSelector((state) => state.message.generalMessage);
   const typing = useSelector(selectors.selectTyping);
   const hasMoreConversation = useSelector(selectors.selectHasMoreConversation);
   const sending = useSelector(selectors.selectSending);
@@ -25,12 +27,31 @@ function Conversation() {
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
   let imagesList = [];
   const receiver = useSelector(selectors.selectReceiver);
+
+  const generalMessages = useSelector(
+    (state) =>
+      state.message.generalMessage &&
+      state.message.generalMessage[`${userLoginLocalStorage.id}`]
+  );
+
   const currentMessages = useSelector(
     (state) =>
       state.message.chatData &&
       state.message.chatData[`${userLoginLocalStorage.id}-${receiver.id}`]
   );
-  console.log("gennnnnnnnnnnn", generalMessages);
+
+  var currentMessagesAfterSort = [];
+  if (currentMessages) {
+    currentMessagesAfterSort = currentMessages.slice().sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  console.log("currentMessagesAfterSort", currentMessagesAfterSort);
+
+  var generalMessagesAfterSort =  [];
+  if (generalMessages) {
+     generalMessagesAfterSort = generalMessages.slice().sort((a, b) => a.timestamp - b.timestamp);
+  }
+  
   const loadMoreConversation = () => {
     // dispatch(actions.doFind(record.receiver.id, record.messages.length));
   };
@@ -40,7 +61,11 @@ function Conversation() {
       senderId: userLoginLocalStorage.id,
       receiverId: receiver.id,
     };
-    dispatch(loadMessage(data));
+    if (Object.keys(receiver).length === 0 && receiver.constructor === Object) {
+      dispatch(loadGeneralMessage(userLoginLocalStorage.id));
+    } else {
+      dispatch(loadPrivateMessage(data));
+    }
   }, [receiver.id]);
 
   const getFullName = (user) => {
@@ -48,15 +73,14 @@ function Conversation() {
     return "";
   };
 
-  const renderConversation = (currentMessages,generalMessages) => {
-    console.log('generalMessages',generalMessages);
-    console.log('cur',currentMessages);
-    console.log('receiver',receiver);
-
-    if (receiver) {
+  const renderConversation = (currentMessages, generalMessages) => {
+    // console.log('generalMessages',generalMessages);
+    // console.log('cur',currentMessages);
+    // console.log('receiver',receiver);
+    if (Object.keys(receiver).length === 0 && receiver.constructor === Object) {
       return (
-        currentMessages &&
-        currentMessages.map((chat, index) => {
+        generalMessages &&
+        generalMessages.map((chat, index) => {
           return (
             <div
               key={index}
@@ -99,7 +123,7 @@ function Conversation() {
                           fontSize: "12px",
                         }}
                       >
-                        {userLoginLocalStorage.firstname}
+                        {chat.firstname}
                       </p>
                       <p color="inherit">{chat.message}</p>
                     </div>
@@ -113,8 +137,8 @@ function Conversation() {
     } else {
       console.log("ahiahi");
       return (
-        generalMessages &&
-        generalMessages.map((chat, index) => {
+        currentMessages &&
+        currentMessages.map((chat, index) => {
           return (
             <div
               key={index}
@@ -125,7 +149,7 @@ function Conversation() {
             >
               <div style={{ width: 30, marginRight: "5px" }}>
                 {chat.senderId !== userLoginLocalStorage.id && record && (
-                  <Tooltip title="General">
+                  <Tooltip title={`General`}>
                     <AvatarCus record={userLoginLocalStorage} size={30} />
                   </Tooltip>
                 )}
@@ -157,7 +181,7 @@ function Conversation() {
                           fontSize: "12px",
                         }}
                       >
-                        {userLoginLocalStorage.firstname}
+                        {receiver.firstname}
                       </p>
                       <p color="inherit">{chat.message}</p>
                     </div>
@@ -234,9 +258,7 @@ function Conversation() {
         <div style={{ textAlign: "center" }}>
           <Spin spinning={findLoading && hasMoreConversation}></Spin>
         </div>
-        {
-          renderConversation(currentMessages,generalMessages)
-          }
+        {renderConversation(currentMessages, generalMessagesAfterSort)}
         {typing && typing.status && typIndicator}
         <div
           style={{

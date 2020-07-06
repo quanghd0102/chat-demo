@@ -11,8 +11,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   const userLogin = useSelector((state) => state.auth.userLogin);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem('userLogin'));
 
-
-
   useEffect(() => {
     
   });
@@ -20,7 +18,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) =>
-        !userLoginLocalStorage ? (
+        !userLoginLocalStorage || !userLogin  ? (
           <Redirect
             to={{
               pathname: "/signin",

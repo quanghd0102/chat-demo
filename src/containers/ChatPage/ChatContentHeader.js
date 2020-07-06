@@ -2,7 +2,6 @@ import React from "react";
 import { Video, Info, ArrowLeft } from "react-feather";
 import actions from "./actions";
 import selectors from "./selectors";
-import callSelectors from "../CallPage/selectors";
 import { Button, Row, Layout } from "antd";
 import userSelectors from "../UserPage/selectors";
 import AvatarCus from "../../components/AvatarCus";
@@ -19,8 +18,6 @@ function ChatContentHeader() {
   const record = useSelector(selectors.selectRecord);
   const receiver = useSelector(selectors.selectReceiver);
   const currentUser = useSelector(userSelectors.selectCurrentUser);
-  const peerId = useSelector(callSelectors.selectPeerId);
-  const isMobileDevice = useSelector(layoutSelectors.selectIsMobileDevice);
   const userLoginLocalStorage = JSON.parse(localStorage.getItem("userLogin"));
 
   const handleCallVideoClick = () => {
@@ -48,49 +45,33 @@ function ChatContentHeader() {
       }}
     >
       <Row type="flex" align="middle">
-        {isMobileDevice && (
-          <Link to="/">
-            <Button
-              style={{ border: "0", marginLeft: "-1.2rem" }}
-              shape="circle"
-              onClick={() => {
-                dispatch(actions.doClear());
-                dispatch(layoutActions.doShowLeftSidebar());
-              }}
-            >
-              <ArrowLeft size={20} strokeWidth={2} />
-            </Button>
-          </Link>
-        )}
+        <Link to="/">
+          <Button
+            style={{ border: "0", marginLeft: "-1.2rem" }}
+            shape="circle"
+            onClick={() => {
+              dispatch(actions.doClear());
+              dispatch(layoutActions.doShowLeftSidebar());
+            }}
+          >
+            <ArrowLeft size={20} strokeWidth={2} />
+          </Button>
+        </Link>
 
         <AvatarCus record={record ? receiver : null} />
         <span className="ml-3" style={{ lineHeight: "1" }}>
           <span style={{ display: "block" }}>
-            {record
-              ? 
-              record.conversationType === "ChatGroup"
-                ? isMobileDevice
-                  ? textAbstract(record.receiver.name, 25)
-                  : record.receiver.name
-                : `${receiver.firstname} ${receiver.lastname}`
-              : ""}
+            {Object.keys(receiver).length === 0 &&
+            receiver.constructor === Object
+              ? "General"
+              : `${receiver.firstname} ${receiver.lastname}`}
           </span>
-          {/* <small className="text-muted">
-                        <span>Online</span>
-                    </small> */}
         </span>
       </Row>
       <span className="mr-auto" />
       <div>
         {record && record.conversationType === "User" && (
           <>
-            {/* <Button
-                            shape="circle"
-                            style={{ border: "0" }}
-                            onClick={() => alert("Ban da nhan vao link")}
-                        >
-                            <Phone size={20} strokeWidth={1} />
-                        </Button> */}
             <Button
               style={{ border: "0" }}
               shape="circle"

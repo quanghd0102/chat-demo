@@ -1,25 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {uniqBy} from 'lodash'
 import { database, db } from "../services/firebase";
 import { act } from "@testing-library/react";
 
 const ref = database.ref("general/");
-export const getGeneralMessage = createAsyncThunk("general/", async () => {
-  try {
-    const message = [];
-    await ref.once("value").then((snap) => {
-      snap.forEach((data) => {
-        let mess = data.val();
-        message.push(mess);
-      });
-    });
-    console.log("general mess", message);
-    return message;
-    
-    
-  } catch (ex) {
-    console.log(ex);
-  }
-});
+// export const getGeneralMessage = createAsyncThunk("general/", async () => {
+//   try {
+//     const message = [];
+//     await ref.once("value").then((snap) => {
+//       snap.forEach((data) => {
+//         let mess = data.val();
+//         message.push(mess);
+//       });
+//     });
+//     console.log("general mess", message);
+//     return message;
+
+//   } catch (ex) {
+//     console.log(ex);
+//   }
+// });
 
 export const getPrivateMessage = createAsyncThunk(
   "privateChat/",
@@ -28,7 +28,7 @@ export const getPrivateMessage = createAsyncThunk(
       const ref = database.ref(`messages/${data.senderId}-${data.receiverId}/`);
       let responseData = [];
       const snapshot = await ref.once("value");
-      console.log('get message,', snapshot)
+      console.log("get message,", snapshot);
       snapshot.forEach((data) => {
         console.log("mes dataa", data.val());
         responseData.push(data.val());
@@ -41,22 +41,22 @@ export const getPrivateMessage = createAsyncThunk(
   }
 );
 
-export const loadMessage = (data) => {
-  return (dispatch, getState) => {
-    const arrMess = [];
+export const loadPrivateMessage = (data) => {
+  return (dispatch) => {
     database
       .ref(`messages/${data.senderId}-${data.receiverId}/`)
       .once("value", (snapshot) => {
         if (snapshot.exists()) {
-          console.log("có rồi");
           const ref = database.ref(
             `messages/${data.senderId}-${data.receiverId}/`
           );
           ref.on("child_added", (snapshot) => {
-            dispatch(actions.addMessage({
-              chatId: `${data.senderId}-${data.receiverId}`,
-              messages: snapshot.val(),
-            }));
+            dispatch(
+              actions.addMessage({
+                chatId: `${data.senderId}-${data.receiverId}`,
+                messages: snapshot.val(),
+              })
+            );
           });
         }
       });
@@ -68,13 +68,27 @@ export const loadMessage = (data) => {
             `messages/${data.receiverId}-${data.senderId}/`
           );
           ref.on("child_added", (snapshot) => {
-            dispatch(actions.addMessage({
-              chatId: `${data.senderId}-${data.receiverId}`,
-              messages: snapshot.val(),
-            }));
+            dispatch(
+              actions.addMessage({
+                chatId: `${data.senderId}-${data.receiverId}`,
+                messages: snapshot.val(),
+              })
+            );
           });
         }
       });
+  };
+};
+
+export const loadGeneralMessage = (senderId) => {
+  return (dispatch) => {
+    const ref = database.ref("general/");
+    ref.on("child_added", (snapshot) => {
+      dispatch(actions.addGeneralMessage({
+        chatId: senderId,
+        message: snapshot.val()
+      }));
+    });
   };
 };
 
@@ -100,7 +114,7 @@ const messageSlice = createSlice({
     },
     receiver: {},
     messages: [],
-    chatData: {},
+    
     inputMesage: {
       images: [],
       text: "",
@@ -109,7 +123,8 @@ const messageSlice = createSlice({
     typing: {},
     imageList: [],
     fileList: [],
-    generalMessage: [],
+    chatData: {},
+    generalMessage: {},
   },
 
   reducers: {
@@ -126,31 +141,45 @@ const messageSlice = createSlice({
     addMessage: (state, action) => {
       // state.messages = [...state.messages, action.payload];
       state.chatData = {
-        [action.payload.chatId]: [...(state.chatData[action.payload.chatId] || []), action.payload.messages]
-      }
+        [action.payload.chatId]: uniqBy([
+          ...(state.chatData[action.payload.chatId] || []),
+          action.payload.messages,
+        ], item => item.timestamp),
+      };
+      console.log("check state priavte mess", state.chatData);
+    },
+    addGeneralMessage: (state, action) => {
+      state.generalMessage = {
+        [action.payload.chatId]: uniqBy([
+          ...(state.generalMessage[action.payload.chatId] || []),
+          action.payload.message,
+        ], item => item.timestamp),
+      };
+      console.log("check state general mess", state.generalMessage);
+
     },
   },
   extraReducers: {
-    [getGeneralMessage.pending]: (state, action) => {
-      if (state.isLoading === false) {
-        state.isLoading = true;
-      }
-    },
-    [getGeneralMessage.fulfilled]: (state, action) => {
-      if (state.isLoading === true) {
-        action.payload.sort((a, b) => {
-          return a.timestamp - b.timestamp;
-        });
-        console.log("check state general mess", action.payload);
-        state.generalMessage = action.payload;
-      }
-    },
-    [getGeneralMessage.rejected]: (state, action) => {
-      if (state.isLoading === true) {
-        state.isLoading = false;
-        state.error = action.payload;
-      }
-    },
+    // [getGeneralMessage.pending]: (state, action) => {
+    //   if (state.isLoading === false) {
+    //     state.isLoading = true;
+    //   }
+    // },
+    // [getGeneralMessage.fulfilled]: (state, action) => {
+    //   if (state.isLoading === true) {
+    //     action.payload.sort((a, b) => {
+    //       return a.timestamp - b.timestamp;
+    //     });
+    //     console.log("check state general mess", action.payload);
+    //     state.generalMessage = action.payload;
+    //   }
+    // },
+    // [getGeneralMessage.rejected]: (state, action) => {
+    //   if (state.isLoading === true) {
+    //     state.isLoading = false;
+    //     state.error = action.payload;
+    //   }
+    // },
     [getPrivateMessage.pending]: (state, action) => {
       if (state.isLoading === false) {
         state.isLoading = true;

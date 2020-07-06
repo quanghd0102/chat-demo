@@ -12,7 +12,7 @@ import callActions from "../CallPage/actions";
 // import Signin from "../AuthPage/SigninPage";
 import userSelectors from "../UserPage/selectors";
 import { getAllUserFromDatabase } from "../../features/userSlice";
-import { getGeneralMessage, getPrivateMessage, loadMessage } from "../../features/messageSlice";
+import { loadGeneralMessage} from "../../features/messageSlice";
 import { manageAddFr } from "../../features/contactSlice";
 import { actions } from "../../features/messageSlice";
 
@@ -42,8 +42,6 @@ export default function ChatPage() {
 
   useEffect(() => {
     dispatch(getAllUserFromDatabase());
-    dispatch(manageAddFr());
-    dispatch(getGeneralMessage());
     dispatch(contactActions.listRequests());
     windowOnResize(window.innerWidth);
     window.addEventListener("resize", windowOnResize);
@@ -54,8 +52,7 @@ export default function ChatPage() {
   }, []);
   useEffect(() => {
     if (userId || userId === undefined) {
-      console.log("user IF", userId);
-      console.log("all mess", currentMessages);
+      console.log("user Id", userId);
       let userChat = {};
       users.map((item) => {
         if (item.id === userId) {
@@ -69,7 +66,6 @@ export default function ChatPage() {
       // dispatch(getPrivateMessage(data));
       dispatch(actions.doSetReciver(userChat));
       dispatch(actions.doFind(userId));
-      console.log('asdasd')
     }
   }, [userId]);
 
