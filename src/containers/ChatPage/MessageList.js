@@ -10,7 +10,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import { formatDistanceToNowStrict } from "date-fns";
 import { textAbstract } from "../shared/helper";
 import { current } from "@reduxjs/toolkit";
-import actions from "../../features/messageSlice";
+import actions from "../../redux/messageSlice";
 
 const MessageList = () => {
   const dispatch = useDispatch();
@@ -148,7 +148,9 @@ const MessageList = () => {
                             {
                               // ? textAbstract(item.receiver.name, 20)
                               textAbstract(
-                                user.firstname + " " + user.lastname,
+                                user.firstname[0].toUpperCase() +  
+                                user.firstname.slice(1) + " " + user.lastname[0].toUpperCase() +  
+                                user.lastname.slice(1),
                                 20
                               )
                             }

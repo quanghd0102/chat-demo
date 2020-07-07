@@ -9,7 +9,7 @@ import selectors from "../selectors";
 import { auth, addNewUserToCloud } from "../../../services/firebase";
 import { addNewUser } from "../../../services/firebase";
 
-import {doSignup} from "../../../features/authSlice";
+import {doSignup} from "../../../redux/authSlice";
 const FormItem = Form.Item;
 const { Text } = Typography;
 

@@ -11,10 +11,10 @@ import callActions from "../CallPage/actions";
 // import SigninPage from "containers/AuthPage/SigninPage";
 // import Signin from "../AuthPage/SigninPage";
 import userSelectors from "../UserPage/selectors";
-import { getAllUserFromDatabase } from "../../features/userSlice";
-import { loadGeneralMessage} from "../../features/messageSlice";
-import { manageAddFr } from "../../features/contactSlice";
-import { actions } from "../../features/messageSlice";
+import { getAllUserFromDatabase } from "../../redux/userSlice";
+import { loadGeneralMessage} from "../../redux/messageSlice";
+import { manageAddFr } from "../../redux/contactSlice";
+import { actions } from "../../redux/messageSlice";
 
 const Sidebar = lazy(() => import("./Sidebar"));
 const ChatContent = lazy(() => import("./ChatContent"));

@@ -8,7 +8,7 @@ import {
   actions,
   doSignin,
   doInitLoadingDone,
-} from "../../../features/authSlice";
+} from "../../../redux/authSlice";
 import action from "../actions";
 import selectors from "../selectors";
 const FormItem = Form.Item;

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import HeaderWrapper from "./styles/HeaderWrapper";
 // import selectors from "./selectors";
 // import actions from "./actions";
-import {doSignout} from "../../features/authSlice";
+import {doSignout} from "../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 const { Header: AntHeader } = Layout;
 

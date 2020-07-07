@@ -11,7 +11,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import {
   loadPrivateMessage,
   loadGeneralMessage,
-} from "../../features/messageSlice";
+} from "../../redux/messageSlice";
 
 function Conversation() {
   const dispatch = useDispatch();
@@ -42,16 +42,20 @@ function Conversation() {
 
   var currentMessagesAfterSort = [];
   if (currentMessages) {
-    currentMessagesAfterSort = currentMessages.slice().sort((a, b) => a.timestamp - b.timestamp);
+    currentMessagesAfterSort = currentMessages
+      .slice()
+      .sort((a, b) => a.timestamp - b.timestamp);
   }
 
   console.log("currentMessagesAfterSort", currentMessagesAfterSort);
 
-  var generalMessagesAfterSort =  [];
+  var generalMessagesAfterSort = [];
   if (generalMessages) {
-     generalMessagesAfterSort = generalMessages.slice().sort((a, b) => a.timestamp - b.timestamp);
+    generalMessagesAfterSort = generalMessages
+      .slice()
+      .sort((a, b) => a.timestamp - b.timestamp);
   }
-  
+
   const loadMoreConversation = () => {
     // dispatch(actions.doFind(record.receiver.id, record.messages.length));
   };
@@ -75,8 +79,8 @@ function Conversation() {
 
   const renderConversation = (currentMessages, generalMessages) => {
     // console.log('generalMessages',generalMessages);
-    // console.log('cur',currentMessages);
-    // console.log('receiver',receiver);
+    console.log('cur',currentMessages);
+    console.log('receiver',receiver);
     if (Object.keys(receiver).length === 0 && receiver.constructor === Object) {
       return (
         generalMessages &&
@@ -92,7 +96,7 @@ function Conversation() {
               <div style={{ width: 30, marginRight: "5px" }}>
                 {chat.senderId !== userLoginLocalStorage.id && record && (
                   <Tooltip title={getFullName(receiver)}>
-                    <AvatarCus record={userLoginLocalStorage} size={30} />
+                    <AvatarCus record={chat.sender} size={30} />
                   </Tooltip>
                 )}
               </div>
@@ -181,7 +185,8 @@ function Conversation() {
                           fontSize: "12px",
                         }}
                       >
-                        {receiver.firstname}
+                        {receiver.firstname[0].toUpperCase() +
+                          receiver.firstname.slice(1)}
                       </p>
                       <p color="inherit">{chat.message}</p>
                     </div>
@@ -258,7 +263,7 @@ function Conversation() {
         <div style={{ textAlign: "center" }}>
           <Spin spinning={findLoading && hasMoreConversation}></Spin>
         </div>
-        {renderConversation(currentMessages, generalMessagesAfterSort)}
+        {renderConversation(currentMessagesAfterSort, generalMessagesAfterSort)}
         {typing && typing.status && typIndicator}
         <div
           style={{

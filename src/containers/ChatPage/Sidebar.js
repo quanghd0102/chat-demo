@@ -26,7 +26,7 @@ import contactSelectors from "../ContactPage/selectors";
 import ModalCreateGroupchat from "./ModalCreateGroupchat";
 import AvatarCus from "../../components/AvatarCus";
 import { getSetting, setSetting } from "../shared/settings";
-import { doSignout } from "../../features/authSlice";
+import { doSignout } from "../../redux/authSlice";
 import { firebase } from "../../services/firebase";
 
 const { Sider, Header } = Layout;

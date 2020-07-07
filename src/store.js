@@ -1,11 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 // import { combineReducers } from "redux";
-import userReducer from "./features/userSlice";
-import authReducer from "./features/authSlice";
-import layoutReducer from "./features/layoutSlice";
-import messageReducer from "./features/messageSlice";
-import contactReducer from "./features/contactSlice";
-import callReducer from "./features/callSlice";
+import userReducer from "./redux/userSlice";
+import authReducer from "./redux/authSlice";
+import layoutReducer from "./redux/layoutSlice";
+import messageReducer from "./redux/messageSlice";
+import contactReducer from "./redux/contactSlice";
+import callReducer from "./redux/callSlice";
 import { createBrowserHistory } from "history";
 import { connectRouter } from "connected-react-router";
 

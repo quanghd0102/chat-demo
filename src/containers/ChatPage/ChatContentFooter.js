@@ -4,7 +4,7 @@ import { Image, Send, Smile, Paperclip } from "react-feather";
 import { useSelector, useDispatch } from "react-redux";
 import selectors from "./selectors";
 // import actions from "./actions";
-import { actions } from "../../features/messageSlice";
+import { actions } from "../../redux/messageSlice";
 import constants from "./constants";
 import userSelectors from "../UserPage/selectors";
 import layoutSelectors from "../Layout/selectors";
@@ -12,7 +12,7 @@ import { Picker } from "emoji-mart";
 import { isAuthenticated } from "../shared/routes/permissionChecker";
 import { database } from "../../services/firebase";
 import { v4 as uuidv4 } from "uuid";
-import { getPrivateMessage, loadMessage } from "../../features/messageSlice";
+import { getPrivateMessage, loadMessage } from "../../redux/messageSlice";
 import { id } from "date-fns/locale";
 
 let typingTimer = null;
@@ -76,8 +76,10 @@ function ChatContentFooter() {
       ) {
         database.ref("general/" + uuidv4()).set({
           senderId: userLoginLocalStorage.id,
-          firstname: userLoginLocalStorage.firstname,
-          lastname: userLoginLocalStorage.lastname,
+          sender: {
+            firstname: userLoginLocalStorage.firstname,
+            lastname: userLoginLocalStorage.lastname,
+          },
           message: inputMessage.text,
           timestamp: Date.now(),
         });
@@ -85,11 +87,11 @@ function ChatContentFooter() {
         database
           .ref(`messages/${userLoginLocalStorage.id}-${receiver.id}`)
           .once("value", (snapshot) => {
+            var id = uuidv4();
             if (snapshot.exists()) {
               database
                 .ref(
-                  `messages/${userLoginLocalStorage.id}-${receiver.id}/` +
-                    uuidv4()
+                  `messages/${userLoginLocalStorage.id}-${receiver.id}/` + id
                 )
                 .set({
                   message: inputMessage.text,
@@ -98,17 +100,9 @@ function ChatContentFooter() {
                   timestamp: Date.now(),
                 });
             } else {
-              return "";
-            }
-          });
-        database
-          .ref(`messages/${receiver.id}-${userLoginLocalStorage.id}`)
-          .once("value", (snapshot) => {
-            if (snapshot.exists()) {
               database
                 .ref(
-                  `messages/${receiver.id}-${userLoginLocalStorage.id}/` +
-                    uuidv4()
+                  `messages/${receiver.id}-${userLoginLocalStorage.id}/` + id
                 )
                 .set({
                   message: inputMessage.text,
@@ -116,10 +110,27 @@ function ChatContentFooter() {
                   receiverId: receiver.id,
                   timestamp: Date.now(),
                 });
-            } else {
-              return "";
             }
           });
+        // database
+        //   .ref(`messages/${receiver.id}-${userLoginLocalStorage.id}`)
+        //   .once("value", (snapshot) => {
+        //     if (snapshot.exists()) {
+        //       database
+        //         .ref(
+        //           `messages/${receiver.id}-${userLoginLocalStorage.id}/` +
+        //             uuidv4()
+        //         )
+        //         .set({
+        //           message: inputMessage.text,
+        //           senderId: userLoginLocalStorage.id,
+        //           receiverId: receiver.id,
+        //           timestamp: Date.now(),
+        //         });
+        //     } else {
+        //       return "";
+        //     }
+        //   });
       }
 
       onInputMessageChange("");
